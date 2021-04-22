@@ -1,0 +1,21 @@
+Package: SPR
+Title: Tools to Learn Statistical Programming in R
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Charlie",
+           family = "Iaconangelo",
+           role = c("aut", "cre"),
+           email = "charles.iaconangelo@gmail.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This R package consists of functions that simulate statistical data. These functions are intended to be used along with Vignettes to illustrate how to fit statistical models to clinical data in R. Simulation studies can be conducted using these functions that allow statistical programmers to evaluate the performance of models in clinical applications.  
+License: `use_gpl3_license()`
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports:
+	MASS
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
