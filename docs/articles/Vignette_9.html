@@ -60,6 +60,12 @@
       <a href="../articles/Vignette_10.html">Vignette_10</a>
     </li>
     <li>
+      <a href="../articles/Vignette_11.html">Vignette_11</a>
+    </li>
+    <li>
+      <a href="../articles/Vignette_12.html">Vignette_12</a>
+    </li>
+    <li>
       <a href="../articles/Vignette_2.html">Vignette_2</a>
     </li>
     <li>
@@ -113,11 +119,16 @@
 <h1 class="hasAnchor">
 <a href="#multinomial-distribution" class="anchor"></a>Multinomial Distribution</h1>
 <p>Review and run the code below to better understand the data distribution.</p>
-<div id="assignment-1-alternative-r-package" class="section level2">
-<h2 class="hasAnchor">
-<a href="#assignment-1-alternative-r-package" class="anchor"></a>Assignment 1: Alternative R package</h2>
+<div id="assignment-1-alternative-r-package" class="section level3">
+<h3 class="hasAnchor">
+<a href="#assignment-1-alternative-r-package" class="anchor"></a>Assignment 1: Alternative R package</h3>
 <p>Find another R package that computes multinomial regression other than <code>nnet</code> and see if you can match these results.</p>
-<p>##Assignment 2: Simulation Study Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> and <code><a href="https://rdrr.io/r/base/load.html">load()</a></code> functions. Use the R code provided below.</p>
+</div>
+<div id="assignment-2-simulation-study" class="section level3">
+<h3 class="hasAnchor">
+<a href="#assignment-2-simulation-study" class="anchor"></a>Assignment 2: Simulation Study</h3>
+<p>Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> and <code><a href="https://rdrr.io/r/base/load.html">load()</a></code> functions. Use the R code provided below.</p>
+</div>
 <div id="generate-cross-sectional-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#generate-cross-sectional-data" class="anchor"></a>Generate cross sectional data</h3>
@@ -186,7 +197,6 @@
 <span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu">nnet</span><span class="fu">:::</span><span class="fu"><a href="https://rdrr.io/pkg/nnet/man/multinom.html">multinom</a></span><span class="op">(</span><span class="va">Y_nom</span> <span class="op">~</span> <span class="va">Group</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">mod0</span>, <span class="va">mod1</span><span class="op">)</span></code></pre></div>
 </div>
-</div>
 <div id="custom-estimation-code" class="section level2">
 <h2 class="hasAnchor">
 <a href="#custom-estimation-code" class="anchor"></a>Custom estimation code</h2>
@@ -227,6 +237,7 @@
 <div id="evaluate-type-i-error-and-power" class="section level2">
 <h2 class="hasAnchor">
 <a href="#evaluate-type-i-error-and-power" class="anchor"></a>Evaluate Type I error and Power</h2>
+<p>Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> and <code><a href="https://rdrr.io/r/base/load.html">load()</a></code> functions. Use the R code provided below.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">nnet</a></span><span class="op">)</span>
 
