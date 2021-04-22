@@ -20,8 +20,6 @@ TODO: Add simulation study code
 
 Review and run the code below to better understand the data distribution. 
 
-### Assignment: Simulation Study
-Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the `save()` and `load()` functions. Example R code for setting up a simulation study is provided in subsequent Vignettes. 
 
 
 

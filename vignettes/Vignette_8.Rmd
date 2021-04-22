@@ -192,6 +192,7 @@ out$par
 # Simulation Study, Ordinal Data
 ## Evaluate Type I error and Power
 
+Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the `save()` and `load()` functions. Use the R code provided below.
 
 ```{r Run_5, eval = F}
 
