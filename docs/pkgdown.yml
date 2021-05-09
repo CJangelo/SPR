@@ -2,10 +2,12 @@ pandoc: 2.11.2
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
+  Fundamentals: Fundamentals.html
   Vignette_1: Vignette_1.html
   Vignette_10: Vignette_10.html
   Vignette_11: Vignette_11.html
   Vignette_12: Vignette_12.html
+  Vignette_13: Vignette_13.html
   Vignette_2: Vignette_2.html
   Vignette_3: Vignette_3.html
   Vignette_4: Vignette_4.html
@@ -14,5 +16,5 @@ articles:
   Vignette_7: Vignette_7.html
   Vignette_8: Vignette_8.html
   Vignette_9: Vignette_9.html
-last_built: 2021-04-22T03:07Z
+last_built: 2021-05-09T23:07Z
 

@@ -54,6 +54,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/Fundamentals.html">Fundamentals</a>
+    </li>
+    <li>
       <a href="../articles/Vignette_1.html">Vignette_1</a>
     </li>
     <li>
@@ -64,6 +67,9 @@
     </li>
     <li>
       <a href="../articles/Vignette_12.html">Vignette_12</a>
+    </li>
+    <li>
+      <a href="../articles/Vignette_13.html">Vignette_13</a>
     </li>
     <li>
       <a href="../articles/Vignette_2.html">Vignette_2</a>
@@ -102,7 +108,7 @@
 
       
 
-      </header><script src="Vignette_6_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="Vignette_6_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Vignette_6</h1>
@@ -131,7 +137,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">MASS</a></span><span class="op">)</span>
 
 
-<span class="va">N</span> <span class="op">=</span> <span class="fl">100</span> <span class="co">#this should be divisible by however many groups you use!</span>
+<span class="va">N</span> <span class="op">=</span> <span class="fl">1000</span> <span class="co">#this should be divisible by however many groups you use!</span>
 <span class="va">number.groups</span> <span class="op">&lt;-</span> <span class="fl">2</span>
 <span class="va">number.timepoints</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="co">#set.seed(2182021)</span>
@@ -163,15 +169,44 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
     <span class="co"># check</span>
-    <span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="fl">1</span>, FUN <span class="op">=</span> <span class="va">mean</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span></code></pre></div>
+<p><img src="Vignette_6_files/figure-html/Run2-1.png" width="700"></p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R">    <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="fl">1</span>, FUN <span class="op">=</span> <span class="va">mean</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
+<span class="co">#&gt;           Y</span>
+<span class="co">#&gt; 1 0.6912979</span>
     <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="va">Group</span>, FUN <span class="op">=</span> <span class="va">mean</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
+<span class="co">#&gt;     Group         Y</span>
+<span class="co">#&gt; 1 Group_1 0.1516929</span>
+<span class="co">#&gt; 2 Group_2 1.2309029</span>
     <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="va">Group</span>, FUN <span class="op">=</span> <span class="va">var</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
+<span class="co">#&gt;     Group        Y</span>
+<span class="co">#&gt; 1 Group_1 7.938578</span>
+<span class="co">#&gt; 2 Group_2 8.828869</span>
     
     <span class="co"># Model?</span>
     <span class="va">mod</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="va">Group</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
     <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Call:</span>
+<span class="co">#&gt; lm(formula = Y ~ Group, data = dat)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Residuals:</span>
+<span class="co">#&gt;      Min       1Q   Median       3Q      Max </span>
+<span class="co">#&gt; -10.6083  -2.0019  -0.0454   2.0236  10.0203 </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Coefficients:</span>
+<span class="co">#&gt;              Estimate Std. Error t value Pr(&gt;|t|)    </span>
+<span class="co">#&gt; (Intercept)    0.1517     0.1295   1.171    0.242    </span>
+<span class="co">#&gt; GroupGroup_2   1.0792     0.1831   5.893 5.17e-09 ***</span>
+<span class="co">#&gt; ---</span>
+<span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Residual standard error: 2.895 on 998 degrees of freedom</span>
+<span class="co">#&gt; Multiple R-squared:  0.03363,    Adjusted R-squared:  0.03266 </span>
+<span class="co">#&gt; F-statistic: 34.73 on 1 and 998 DF,  p-value: 5.173e-09</span>
     <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">$</span><span class="va">sigma</span>
+<span class="co">#&gt; [1] 2.895466</span>
     <span class="co"># g2g</span>
   </code></pre></div>
 </div>
@@ -179,7 +214,7 @@
 <h2 class="hasAnchor">
 <a href="#run-custom-estimation-code" class="anchor"></a>Run custom estimation code</h2>
 <p>This is helpful because it shows you the likelihood</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">vP</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'b0'</span> <span class="op">=</span> <span class="fl">0.2</span>, <span class="st">'b1'</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
 
@@ -209,13 +244,19 @@
 
 <span class="co"># Compare observed vs predicted:</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">Y.hat</span><span class="op">)</span>
+<span class="co">#&gt; [1] 0.6912979</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>
+<span class="co">#&gt; [1] 0.6912979</span>
 <span class="co"># Compare parameter estimates:</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span>
   <span class="st">'Gen param'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">Beta</span>, <span class="va">sigma2</span><span class="op">)</span>, 
   <span class="st">'Custom Function'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">par</span>, <span class="va">sigma2.hat</span><span class="op">)</span>, 
   <span class="st">'R package'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">$</span><span class="va">sigma</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<span class="op">)</span>
+<span class="co">#&gt;    Gen param Custom Function R package</span>
+<span class="co">#&gt; b0       0.2       0.1516929 0.1516929</span>
+<span class="co">#&gt; b1       1.0       1.0792100 1.0792100</span>
+<span class="co">#&gt;          9.0       8.3837232 8.3837232</span></code></pre></div>
 </div>
 </div>
   </div>
