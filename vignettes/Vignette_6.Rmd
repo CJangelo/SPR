@@ -27,12 +27,12 @@ Review and run the code below to better understand the data distribution.
 
 ## Generate cross sectional data
 
-```{r Run1, eval = F}
+```{r Run1, eval = T}
 library(SPR)
 library(MASS)
 
 
-N = 100 #this should be divisible by however many groups you use!
+N = 1000 #this should be divisible by however many groups you use!
 number.groups <- 2
 number.timepoints <- 1
 #set.seed(2182021)
@@ -63,7 +63,7 @@ number.timepoints <- 1
 
 ## Plot 
 
-```{r Run2, eval = F}
+```{r Run2, eval = T}
 
     # check
     hist(dat$Y)
@@ -83,7 +83,7 @@ number.timepoints <- 1
 This is helpful because it shows you the likelihood
 
 
-```{r Run3, eval = F}
+```{r Run3, eval = T}
 
 vP <- c('b0' = 0.2, 'b1' = 1)
 
