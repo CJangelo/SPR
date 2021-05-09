@@ -25,6 +25,10 @@ The Vignettes are the focus of the Training. The R package is intended
 to be used to simulate data to illustrate the statistical programming in
 R with clinical data.
 
+### Fundamentals
+
+This covers the basics of doing analysis as a member of our team.
+
 ### Missing Data
 
 -   Vignette 1. Fit a MMRM in R
