@@ -1,17 +1,16 @@
-#' Simulate Longitudinal Continuous Data
+#' Simulate Longitudinal Ordinal Data with Logistic Specification
 #'
-#' TODO: add the following options:
-#' 1. check conditional MCAR
-#' 2. Test the checks
+#' TODO: Build in check if the correlations are too high! Where is that code?
+#' Note that the variances aren't used if passed,
 #' Requires MASS R package
 #' @param reg.formula this is a regression formula to pass to the data generation; null is
 #' formula(~ Group + Time + Time*Group),
 #' @param Beta this is the Beta for the regression equation; numeric matrix of Beta values OR a scalar value != 0
 #' that will be the final value of the interaction parameters, default is all(Beta == 0) for Type I error simulations
+#' @param thresholds the ordinal generation uses a logistic approach,
+#' and these are the tresholds
 #' @param corr options for correlation structure  c('ind', 'ar1', 'cs'), default is 'ar1'
 #' @param cor.value numeric, the first corr in ar1, the corr in cs option
-#' @param var.values numeric vector of variances, Default variance value at last timepoint is 2.
-#' Can either adjust that last value (rest will be filled in automatically) OR you can pass the full vector
 #' @param cond.mcar logical; do you want a conditional MCAR data generation
 #' @param Covariate logical; do you want a random simulated covariate?
 #'
@@ -19,17 +18,16 @@
 #' @export
 
 
-
-sim_dat <- function(N = 100 ,
-                    number.groups = 2,
-                    number.timepoints = 4,
-                    reg.formula = NULL,
-                    Beta = 0,
-                    corr = 'ar1',
-                    cor.value = NULL,
-                    var.values = 2,
-                    cond.mcar = F,
-                    Covariate = F
+sim_dat_ord_logistic <- function(N = 100 ,
+                                 number.groups = 2,
+                                 number.timepoints = 4,
+                                 reg.formula = NULL,
+                                 Beta = 0,
+                                 thresholds = c(-2, -1, 0, 1),
+                                 corr = 'ar1',
+                                 cor.value = NULL,
+                                 cond.mcar = F,
+                                 Covariate = F
 ){
 
  # checks:
@@ -44,6 +42,7 @@ sim_dat <- function(N = 100 ,
 
   dat <- data.frame(
     'USUBJID' = rep(paste0('Subject_', formatC(1:N, width = 4, flag = '0')), length.out= N*number.timepoints),
+    'id.geepack' = rep(1:N, length.out= N*number.timepoints),
     'Group' = rep(paste0('Group_', 1:number.groups), length.out = N*number.timepoints),
     'Time' = rep(paste0('Time_', 1:number.timepoints), each = N),
     'Y_comp' = rep(NA, N*number.timepoints),
@@ -62,9 +61,10 @@ if (Covariate == T) {
 if (cond.mcar == F) {
 
 
+  # ----------------------------------------------------------------------------------------
   # Design Matrix
   X <- model.matrix( reg.formula, data = dat)
-
+  #-------------------------------------------------------------------------------------
 
   if (length(Beta) == 1) {
     if (Beta == 0) {
@@ -103,9 +103,10 @@ if (cond.mcar == F) {
   }
 
 
+  # --------------------------------------------------------------------------------------------------
   # Matrix multiply:
+  rownames(Beta) <- colnames(X)
   XB <- X %*% Beta
-  dat$XB <- as.vector(XB)
 
 
   # -------------------------------------------------------------------
@@ -120,7 +121,7 @@ if (cond.mcar == F) {
 
   if (corr == 'cs') {
 
-    if (is.null(cor.value)) { cor.value <- 0.4 }
+    if (is.null(cor.value)) { cor.value <- 0.30 }
     cor.mat <- matrix(cor.value, nrow = number.timepoints, ncol = number.timepoints)
     diag(cor.mat) <- 1
 
@@ -129,7 +130,7 @@ if (cond.mcar == F) {
 
   if (corr == 'ar1') {
 
-    if (is.null(cor.value)) { cor.value <- 0.8 }
+    if (is.null(cor.value)) { cor.value <- 0.40 }
 
     cor.mat <- diag(1, nrow = number.timepoints, ncol = number.timepoints)
     for (i in 1:number.timepoints) {
@@ -143,70 +144,44 @@ if (cond.mcar == F) {
 
   }# end exponential decay correlations
 
+# ---------------------------------------------------------------------
+# GENERATE ORDINAL DATA - LOGISTIC
+#  This chunk here is the only part that is distinct from "sim_dat.R"
 
-  # Variances
-  # if (is.null(var.values)) {
-  #
-  #   var.values <- seq(1, 2, length.out = number.timepoints)
-  #
-  # }
+mat.XB <- matrix(XB, nrow = nrow(XB), ncol = length(thresholds), byrow = F)
+mat.thr <- matrix(thresholds, nrow = nrow(XB), ncol = length(thresholds), byrow = T)
+eta <- mat.thr - mat.XB
 
-# Default variance value at last timepoint is 2
-  # Can either adjust that last value (rest will be filled in automatically)
-  # OR you can pass the full vector
-  if (length(var.values) == 1) {
+p <- exp(eta)/(1 + exp(eta))
+z <- stats::qnorm(p)
 
-        var.values <- seq(1, var.values, length.out = number.timepoints)
-
-  } else {
-
-    if (length(var.values) != number.timepoints) stop('Vector of variance values does not equal number of timepoints')
-
+error <- MASS:::mvrnorm(n = N, mu = rep(0, number.timepoints), Sigma = cor.mat)
+  # Re-arrange in long format:
+  error.long <- vector()
+  for (time in 1:number.timepoints) {
+    error.long <- rbind(error.long,
+                        error[, time, drop = F])
   }
 
-  # Variance- Covariance Matrix:
-  var.mat <- diag(sqrt(var.values), nrow = number.timepoints, ncol = number.timepoints)
-  sigma <- var.mat %*% cor.mat %*% var.mat
+el <- matrix(error.long, nrow = nrow(error.long), ncol = ncol(z), byrow = F)
+Y <- as.integer(apply(z < el, 1, sum))
+dat$Y_comp <- as.vector(Y)
 
 
-#--------------------------------------------------------------------------------
-  # Fixed 4.8.21
-  # Simulate the errors:
-  error <- MASS:::mvrnorm(n = N, mu = rep(0, number.timepoints), Sigma = sigma)
-    colnames(error) <- unique(dat$Time)
-  # Associate errors with the correct XB to create correct Y for each subject
-  dat$error <- NA
 
-  for (tt in unique(dat$Time)) {
-    dat$error[which(dat$Time == tt)] <- error[, tt, drop = T]
-  }
 
-  dat$Y_comp <- as.vector(dat$XB + dat$error)
-
-  # # Simulate the errors:
-  # mu <- rep(0, number.timepoints)
-  # error <- MASS:::mvrnorm(n = N, mu = mu, Sigma = sigma)
-  # # Re-arrange in long format:
-  # error.long <- vector()
-  # for(time in 1:number.timepoints){
-  #   error.long <- rbind(error.long,
-  #                       error[, time, drop = F]
-  #   )
-  # }
-  #
-  # Y <- XB + error.long
-  # dat$Y_comp <- as.vector(Y)
+#-----------------------------------------------------------------------------------------
 
 
   out <- list('dat' = dat,
               'reg.formula' = reg.formula,
               'Beta' = Beta,
-              'sigma' = sigma,
-              'cor.mat' = cor.mat,
-              'var.values' = var.values
+              'thresholds' = thresholds,
+              'cor.mat' = cor.mat
   )
 
   return(out)
 
 
-}## End "simulate_data.R" Code
+
+}## End "sim_data_ord_logistic.R" Code
