@@ -1,10 +1,19 @@
-pandoc: 2.11.2
+pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  Fundamentals: Fundamentals.html
+  01_Fundamentals: 01_Fundamentals.html
+  06_Continuous: 06_Continuous.html
+  07_Binomial: 07_Binomial.html
+  08_Ordinal-Probit: 08_Ordinal-Probit.html
+  09_Ordinal-Logistic: 09_Ordinal-Logistic.html
+  10_Multinomial: 10_Multinomial.html
+  11_Poisson_Negative_Binomial: 11_Poisson_Negative_Binomial.html
+  12_GLMM: 12_GLMM.html
+  13_CLMM_probit: 13_CLMM_probit.html
+  14_CLMM_logistic: 14_CLMM_logistic.html
+  15_CLMM_conditional: 15_CLMM_conditional.html
   Vignette_1: Vignette_1.html
-  Vignette_10: Vignette_10.html
   Vignette_11: Vignette_11.html
   Vignette_12: Vignette_12.html
   Vignette_13: Vignette_13.html
@@ -12,9 +21,5 @@ articles:
   Vignette_3: Vignette_3.html
   Vignette_4: Vignette_4.html
   Vignette_5: Vignette_5.html
-  Vignette_6: Vignette_6.html
-  Vignette_7: Vignette_7.html
-  Vignette_8: Vignette_8.html
-  Vignette_9: Vignette_9.html
-last_built: 2021-05-09T23:07Z
+last_built: 2021-06-23T21:45Z
 

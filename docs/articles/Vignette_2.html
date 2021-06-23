@@ -54,13 +54,40 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/Fundamentals.html">Fundamentals</a>
+      <a href="../articles/01_Fundamentals.html">Fundamentals</a>
+    </li>
+    <li>
+      <a href="../articles/06_Continuous.html">Continuous Data (Normal error distribution)</a>
+    </li>
+    <li>
+      <a href="../articles/07_Binomial.html">Binomial Distribution</a>
+    </li>
+    <li>
+      <a href="../articles/08_Ordinal-Probit.html">Ordinal Data (Probit)</a>
+    </li>
+    <li>
+      <a href="../articles/09_Ordinal-Logistic.html">Ordinal Data (Logistic)</a>
+    </li>
+    <li>
+      <a href="../articles/10_Multinomial.html">Multinomial Distribution</a>
+    </li>
+    <li>
+      <a href="../articles/11_Poisson_Negative_Binomial.html">Poisson and Negative Binomial Distributions</a>
+    </li>
+    <li>
+      <a href="../articles/12_GLMM.html">Longitudinal Binomial Data with the Generalized Linear Mixed Model: Simulation Study</a>
+    </li>
+    <li>
+      <a href="../articles/13_CLMM_probit.html">Longitudinal Ordinal Data (Probit)</a>
+    </li>
+    <li>
+      <a href="../articles/14_CLMM_logistic.html">Longitudinal Ordinal Data (Logistic)</a>
+    </li>
+    <li>
+      <a href="../articles/15_CLMM_conditional.html">Longitudinal Ordinal Data, Conditional Specification</a>
     </li>
     <li>
       <a href="../articles/Vignette_1.html">Vignette_1</a>
-    </li>
-    <li>
-      <a href="../articles/Vignette_10.html">Vignette_10</a>
     </li>
     <li>
       <a href="../articles/Vignette_11.html">Vignette_11</a>
@@ -83,18 +110,6 @@
     <li>
       <a href="../articles/Vignette_5.html">Vignette_5</a>
     </li>
-    <li>
-      <a href="../articles/Vignette_6.html">Vignette_6</a>
-    </li>
-    <li>
-      <a href="../articles/Vignette_7.html">Vignette_7</a>
-    </li>
-    <li>
-      <a href="../articles/Vignette_8.html">Vignette_8</a>
-    </li>
-    <li>
-      <a href="../articles/Vignette_9.html">Vignette_9</a>
-    </li>
   </ul>
 </li>
       </ul>
@@ -108,7 +123,7 @@
 
       
 
-      </header><script src="Vignette_2_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><script src="Vignette_2_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Vignette_2</h1>
@@ -137,7 +152,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">glmmTMB</span><span class="op">)</span> <span class="co"># https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rvlenth/emmeans">emmeans</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://svn.r-project.org/R-packages/trunk/nlme/">nlme</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">lme4</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/lme4/lme4/">lme4</a></span><span class="op">)</span>
 
 
   <span class="va">all.p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="op">)</span>
@@ -201,17 +216,17 @@
                   dispformula<span class="op">=</span><span class="op">~</span><span class="fl">0</span><span class="op">)</span>
   
   <span class="co"># MMRM - </span>
-  <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">lme4</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/lme4/lme4/">lme4</a></span><span class="op">)</span>
   <span class="co">#  https://bit.ly/2ZSxBRG</span>
   <span class="co">#  https://drive.google.com/file/d/1sOZUAFOc004H4jO8vuUc_4HyYHEgu45b/view?usp=sharing&amp;usp=embed_facebook</span>
-  <span class="va">mod.lmer1</span> <span class="op">&lt;-</span> <span class="fu">lmer</span><span class="op">(</span><span class="va">Y_comp</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span><span class="op">*</span><span class="va">Time</span> <span class="op">+</span> <span class="op">(</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">|</span> <span class="va">USUBJID</span><span class="op">)</span>, 
+  <span class="va">mod.lmer1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html">lmer</a></span><span class="op">(</span><span class="va">Y_comp</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span><span class="op">*</span><span class="va">Time</span> <span class="op">+</span> <span class="op">(</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">|</span> <span class="va">USUBJID</span><span class="op">)</span>, 
                     data <span class="op">=</span> <span class="va">dat</span>, 
-                    control <span class="op">=</span> <span class="fu">lmerControl</span><span class="op">(</span>check.nobs.vs.nRE <span class="op">=</span> <span class="st">'ignore'</span><span class="op">)</span><span class="op">)</span> 
+                    control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmerControl.html">lmerControl</a></span><span class="op">(</span>check.nobs.vs.nRE <span class="op">=</span> <span class="st">'ignore'</span><span class="op">)</span><span class="op">)</span> 
   
   
-  <span class="va">mod.lmer2</span> <span class="op">&lt;-</span> <span class="fu">lmer</span><span class="op">(</span><span class="va">Y_mar</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span><span class="op">*</span><span class="va">Time</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">|</span> <span class="va">USUBJID</span><span class="op">)</span>, 
+  <span class="va">mod.lmer2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html">lmer</a></span><span class="op">(</span><span class="va">Y_mar</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span><span class="op">*</span><span class="va">Time</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">|</span> <span class="va">USUBJID</span><span class="op">)</span>, 
                     data <span class="op">=</span> <span class="va">dat</span>, 
-                    control <span class="op">=</span> <span class="fu">lmerControl</span><span class="op">(</span>check.nobs.vs.nRE <span class="op">=</span> <span class="st">'ignore'</span><span class="op">)</span><span class="op">)</span> 
+                    control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmerControl.html">lmerControl</a></span><span class="op">(</span>check.nobs.vs.nRE <span class="op">=</span> <span class="st">'ignore'</span><span class="op">)</span><span class="op">)</span> 
   
 
 

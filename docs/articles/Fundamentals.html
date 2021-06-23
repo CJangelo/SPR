@@ -57,6 +57,9 @@
       <a href="../articles/Fundamentals.html">Fundamentals</a>
     </li>
     <li>
+      <a href="../articles/Ordinal-Logistic.html">Ordinal Data (Logistic)</a>
+    </li>
+    <li>
       <a href="../articles/Vignette_1.html">Vignette_1</a>
     </li>
     <li>
@@ -87,10 +90,10 @@
       <a href="../articles/Vignette_6.html">Vignette_6</a>
     </li>
     <li>
-      <a href="../articles/Vignette_7.html">Vignette_7</a>
+      <a href="../articles/Vignette_7.html">Binomial Distribution</a>
     </li>
     <li>
-      <a href="../articles/Vignette_8.html">Vignette_8</a>
+      <a href="../articles/Vignette_8.html">Ordinal Data (Probit)</a>
     </li>
     <li>
       <a href="../articles/Vignette_9.html">Vignette_9</a>
@@ -108,7 +111,7 @@
 
       
 
-      </header><script src="Fundamentals_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><script src="Fundamentals_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Fundamentals</h1>
@@ -125,14 +128,12 @@
 <h2 class="hasAnchor">
 <a href="#software-project-set-up" class="anchor"></a>Software Project Set up</h2>
 <ul>
-<li>
-<p>Sponsor name, some descriptive for you to remember it, and project code:</p>
+<li>Sponsor name, some descriptive for you to remember it, and project code:
 <ul>
 <li>Example: ABBV_CONSISTENCY_20222</li>
 </ul>
 </li>
-<li>
-<p>Within this folder:</p>
+<li>Within this folder:
 <ol style="list-style-type: decimal">
 <li>R project with project number</li>
 <li>README file to note things to yourself with dates and topics, anything you need to jot down, do it here.
@@ -143,13 +144,7 @@
 <li>Folders: DATA_20222, CODE_20222, TABLES_20222, FIGURES_20222, DOCUMENTS_2022; “DEPRECATED” subfolder to hold old, archived versions; “SANDBOX” subfolder to dump any code where you were messing around with something but it’s not for use - eg: “mmrm_testing_df_for_meeting_check”</li>
 </ol>
 </li>
-<li>
-<p>Code guidelines: <a href="https://style.tidyverse.org/" class="uri">https://style.tidyverse.org/</a></p>
-<ul>
-<li>Most important - document heavily; another programmer should be able to step in, review your code, and figure out what you’re doing <strong>and why </strong> without too much difficulty.</li>
-</ul>
-</li>
-<li><p>Create browser folder containing bookmarks related to a project</p></li>
+<li>Create browser folder containing bookmarks related to a project</li>
 </ul>
 </div>
 <div id="data-management" class="section level2">
@@ -172,7 +167,8 @@
 <li>We can use the haven R package to read in a variety of data formats: <a href="https://haven.tidyverse.org/" class="uri">https://haven.tidyverse.org/</a>
 <ul>
 <li>However, I have had some issues reading in sas7bdat, rare but i hold my breath when reading in sas7bdat files.</li>
-<li>Also, you cannot write out sas7bdat files (<a href="https://github.com/tidyverse/haven/issues/357#issuecomment-376313103" class="uri">https://github.com/tidyverse/haven/issues/357#issuecomment-376313103</a>)</li>
+<li>Also, R cannot write out sas7bdat files (<a href="https://github.com/tidyverse/haven/issues/357#issuecomment-376313103" class="uri">https://github.com/tidyverse/haven/issues/357#issuecomment-376313103</a>)</li>
+<li>If you need to provide a sas7bdat file, ask internal colleague to convert .csv or .dat file to a .sas7bdat file.</li>
 <li>Long story short, the xpt file format is mandated by the FDA to be used, so they should have it. In my experience it requires more management but that’s okay, it will work.</li>
 <li><a href="https://www.fda.gov/media/132457/download" class="uri">https://www.fda.gov/media/132457/download</a></li>
 </ul>
@@ -291,6 +287,18 @@
 </li>
 </ol>
 </li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="code-guidelines" class="section level2">
+<h2 class="hasAnchor">
+<a href="#code-guidelines" class="anchor"></a>Code Guidelines</h2>
+<ul>
+<li>
+<p>Code guidelines: <a href="https://style.tidyverse.org/" class="uri">https://style.tidyverse.org/</a></p>
+<ul>
+<li>Most important - document heavily; another programmer should be able to step in, review your code, and figure out what you’re doing <strong>and why </strong> without too much difficulty.</li>
 </ul>
 </li>
 </ul>
