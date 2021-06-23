@@ -1,7 +1,7 @@
 ########################################################
 #
 #
-#           GENERATE 
+#           GENERATE
 #           Ordered Data
 #           Cross sectional
 #
@@ -28,7 +28,7 @@ dat <- data.frame(
 
 
 # Create Beta parameters for these design matrix:
-X <- model.matrix( ~ Group  , data = dat) 
+X <- model.matrix( ~ Group  , data = dat)
 
 
 # Create Beta
@@ -39,7 +39,7 @@ Beta[] <- c(0.0, 1)
 XB <- X %*% Beta
 
 
-# Define thresholds: 
+# Define thresholds:
 thresholds <- c(0.1, 0.4, 0.7, 0.9) # probabilities of the normal distribution
 p <- c(0, thresholds, 1)
 diff(p) # here's the proportion in each category
@@ -63,13 +63,13 @@ barplot(100*table(dat$Y_ord)/sum(table(dat$Y_ord)), ylim = c(0, 100), ylab = 'Pe
 
 # Fit Models:
 mod <- MASS:::polr(as.factor(Y_ord) ~ Group , data= dat, method = 'probit', Hess = T)
-summary(mod) 
+summary(mod)
 mod$coefficients # can't estimate an intercept here
 Beta
 mod$zeta
 zeta[1,]
 
-# Logistic, not probit 
+# Logistic, not probit
 # Note that the variance of the logistic disribution is pi/3 rather than 1
 mod.logit <- MASS:::polr(as.factor(Y_ord) ~ Group , data= dat, method = 'logistic', Hess = T)
 summary(mod.logit)

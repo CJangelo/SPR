@@ -12,24 +12,24 @@ source("C:/Users/ciaconangelo/Documents/RESEARCH_NEW_LAPTOP/R_CODE_Long_Mixed_Mo
 #source("C:/Users/ciaconangelo/Documents/RESEARCH_NEW_LAPTOP/R_CODE_Long_Mixed_Models/VarCov_gls.R")
 
  set.seed(321)
-  
-  out <- sim_dat_ord(N = 10000, 
-                 number.groups = 2 , 
-                 number.timepoints = 4, 
+
+  out <- sim_dat_ord(N = 10000,
+                 number.groups = 2 ,
+                 number.timepoints = 4,
                  reg.formula = formula( ~ Time + Group + Time*Group),
                  Beta = 0.5,
-                 thresholds = c(0.25, 0.50, 0.75), 
-                 corr = 'ar1', 
-                 cor.value = 0.4) 
+                 thresholds = c(0.25, 0.50, 0.75),
+                 corr = 'ar1',
+                 cor.value = 0.4)
 
-  
+
   dat <- out$dat
   str(dat)
-  
-  dat <- dropout(dat = dat, 
-                 type_dropout  = c('mcar'), 
+
+  dat <- dropout(dat = dat,
+                 type_dropout  = c('mcar'),
                  prop.miss = 0.3)
-  
+
 
 cor(x = dat$Y_comp[dat$Time == 'Time_1'], y = dat$Y_comp[dat$Time == 'Time_2'])
 cor(x = dat$Y_comp[dat$Time == 'Time_2'], y = dat$Y_comp[dat$Time == 'Time_3'])
@@ -57,7 +57,8 @@ out$thresholds
 mod.ord1$zeta
 mod.ord2$zeta
 
-
-
-
+library(ordinal)
+mod.clmm <- clmm(as.factor(Y_comp) ~ Group + Time + Group*Time + (1|USUBJID),
+                 data= dat)
+summary(mod.clmm)
 
