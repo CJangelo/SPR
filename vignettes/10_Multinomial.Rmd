@@ -1,0 +1,202 @@
+---
+title: "Multinomial Distribution"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Multinomial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+
+Review and run the code below to better understand the data distribution. 
+
+### Assignment 1: Alternative R package
+Find another R package that computes multinomial regression other than `nnet` and see if you can match these results.
+
+
+### Assignment 2: Simulation Study
+Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the `save()` and `load()` functions. Use the R code provided below.
+
+
+
+
+
+
+
+### Generate cross sectional data
+
+
+```{r Run1, eval = F}
+library(SPR)
+library(MASS)
+library(polycor)
+N = 1e4 #this should be divisible by however many groups you use!
+number.groups <- 2
+number.timepoints <- 1
+set.seed(02032021)
+
+dat <- data.frame(
+                  'USUBJID' = rep(paste0('Subject_', formatC(1:N, width = 4, flag = '0')), length.out= N*number.timepoints),
+                  'Group' = rep(paste0('Group_', 1:number.groups), length.out = N*number.timepoints),
+                  stringsAsFactors=F)
+
+
+# Create Beta parameters for these design matrix:
+X <- model.matrix( ~ Group  , data = dat) 
+
+k <- 5 # Number of categories in the nominal item
+
+# Create Beta
+Beta <- matrix(0, nrow = ncol(X), ncol = k - 1, dimnames=list(colnames(X), paste0('param', 1:(k-1))))
+Beta[1, ] <- c(0.2, 0.8, 0.4, 0.6)
+Beta[2, ] <- c(0.2, -1.0, -0.6, 0.8)
+
+# Matrix multiply:
+XB <- X %*% Beta
+
+sum.expXB <- apply(exp(XB), 1, sum)
+p <- exp(XB)/(1 + sum.expXB)
+param0 <-  1 - rowSums(p)
+p <- cbind(param0, p)
+
+  out <- vector()
+for(i in 1:nrow(p)){
+  out <- c(out, 
+           sample(x = c(0, 1, 2, 3, 4), size = 1, prob = p[i, ])  
+  )
+  
+} #end loop
+ prop.table(table(out))
+ colMeans(p)
+  
+ dat$Y_nom <- out
+
+aggregate(Y_nom ~ Group, FUN = function(x) table(x), dat = dat, na.action = na.pass)
+xtabs( ~ Y_nom + Group, data = dat)
+prop.table(xtabs( ~ Y_nom + Group, data = dat))
+addmargins(prop.table(xtabs( ~ Group + Y_nom, data = dat), 1), 2)
+barplot(100*table(dat$Y_nom)/sum(table(dat$Y_nom)), ylim = c(0, 100), ylab = 'Percentage', col = 'grey', main = 'Nominal')
+
+
+# Fit Models:
+library(nnet)
+dat$Y_nom_factor <- as.factor(dat$Y_nom)
+mod <- nnet:::multinom(Y_nom_factor ~ Group, data = dat)
+summary(mod)
+coef(mod)
+t(Beta)
+
+# TODO: Try other R packages for fitting multinomial models
+mod0 <- nnet:::multinom(Y_nom ~ 1, data = dat)
+mod1 <- nnet:::multinom(Y_nom ~ Group, data = dat)
+anova(mod0, mod1)
+```
+
+## Custom estimation code
+
+```{r Run2, eval = F}
+
+# Custom written estimation routine:
+multinom_loglike <- function(vP, X, Y, data, k){
+  
+  vP <- matrix(vP, nrow = ncol(X), ncol = k - 1)
+  Y <- model.matrix( ~ - 1 + Y, data = data)
+  XB <- X %*% vP
+  sum.expXB <- apply(exp(XB), 1, sum)
+  p <- exp(XB)/(1 + sum.expXB)
+  param0 <-  1 - rowSums(p)
+  p <- cbind(param0, p)
+
+  # Loglikelihood:
+  loglike <- Y*log(p)
+  loglike <- -1*loglike # optimization will minimize function
+  loglike <- sum(loglike)
+  return(loglike)
+  
+}
+
+# optimize
+vP <- Beta
+out <- optim(par = vP, fn = multinom_loglike, method = 'BFGS', 
+             X = X, Y = dat$Y_nom_factor, data = dat, k = k)
+# Compare Generating Parameter to nnet package estimate and the custom code estimate
+t(Beta)
+coef(mod)
+t(out$par)
+
+
+```
+
+
+# Simulation Study, Multinomial Data
+## Evaluate Type I error and Power
+
+Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the `save()` and `load()` functions. Use the R code provided below.
+
+```{r Run3, eval = F}
+library(nnet)
+
+N = 100
+number.groups <- 2
+number.timepoints <- 1
+set.seed(2032021)
+
+dat <- data.frame(
+                  'USUBJID' = rep(paste0('Subject_', formatC(1:N, width = 4, flag = '0')), length.out= N*number.timepoints),
+                  'Group' = rep(paste0('Group_', 1:number.groups), length.out = N*number.timepoints),
+                  stringsAsFactors=F)
+
+# Create Beta parameters for these design matrix:
+X <- model.matrix( ~ Group  , data = dat) 
+
+k <- 5 # Number of categories in the nominal item
+
+# Create Beta
+Beta <- matrix(0, nrow = ncol(X), ncol = k - 1, dimnames=list(colnames(X), paste0('param', 1:(k-1))))
+Beta[1, ] <- c(0.2, 0.8, 0.4, 0.6) # Intercepts
+#Beta[2, ] <- 0 # Type I error
+Beta[2, ] <- c(0.2, -1.0, -0.6, 0.8)  # Power
+
+# Matrix multiply:
+XB <- X %*% Beta
+
+sum.expXB <- apply(exp(XB), 1, sum)
+p <- exp(XB)/(1 + sum.expXB)
+param0 <-  1 - rowSums(p)
+p <- cbind(param0, p)
+
+##
+
+out <- vector()
+for(repl in 1:1000){
+      
+      Y <- vector()
+    for(i in 1:nrow(p)){
+      Y <- c(Y, sample(x = c(0, 1, 2, 3, 4), size = 1, prob = p[i, ]))
+      } #end loop
+    
+     dat$Y_nom <- Y
+      # Fit Models:
+      mod0 <- nnet:::multinom(Y_nom ~ 1, data = dat, trace = F)
+      mod1 <- nnet:::multinom(Y_nom ~ Group, data = dat, trace = F)
+    
+      tmp <- anova(mod0, mod1)
+      out <- c(out, tmp$`Pr(Chi)`[2])
+      
+      cat('Replication: ', repl, '\n')
+      
+} #end loop
+
+mean(out < 0.05)
+
+
+```
+
