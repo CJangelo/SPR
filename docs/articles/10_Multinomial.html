@@ -137,23 +137,11 @@
     
     
 <p>Review and run the code below to better understand the data distribution.</p>
-<div id="assignment-1-alternative-r-package" class="section level3">
-<h3 class="hasAnchor">
-<a href="#assignment-1-alternative-r-package" class="anchor"></a>Assignment 1: Alternative R package</h3>
-<p>Find another R package that computes multinomial regression other than <code>nnet</code> and see if you can match these results.</p>
-</div>
-<div id="assignment-2-simulation-study" class="section level3">
-<h3 class="hasAnchor">
-<a href="#assignment-2-simulation-study" class="anchor"></a>Assignment 2: Simulation Study</h3>
-<p>Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> and <code><a href="https://rdrr.io/r/base/load.html">load()</a></code> functions. Use the R code provided below.</p>
-</div>
 <div id="generate-cross-sectional-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#generate-cross-sectional-data" class="anchor"></a>Generate cross sectional data</h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SPR</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">MASS</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-forge.r-project.org/projects/polycor/">polycor</a></span><span class="op">)</span>
+<code class="sourceCode R">
 <span class="va">N</span> <span class="op">=</span> <span class="fl">1e4</span> <span class="co">#this should be divisible by however many groups you use!</span>
 <span class="va">number.groups</span> <span class="op">&lt;-</span> <span class="fl">2</span>
 <span class="va">number.timepoints</span> <span class="op">&lt;-</span> <span class="fl">1</span>
@@ -186,22 +174,23 @@
   <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="op">)</span>
 <span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
   <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">out</span>, 
-           <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span>, prob <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">)</span>  
+           <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'C'</span>, <span class="st">'D'</span>, <span class="st">'E'</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span>, prob <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">)</span>  
   <span class="op">)</span>
   
 <span class="op">}</span> <span class="co">#end loop</span>
- <span class="fu"><a href="https://rdrr.io/r/base/proportions.html">prop.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">)</span>
- <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>
   
  <span class="va">dat</span><span class="op">$</span><span class="va">Y_nom</span> <span class="op">&lt;-</span> <span class="va">out</span>
 
-<span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">Y_nom</span> <span class="op">~</span> <span class="va">Group</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, dat <span class="op">=</span> <span class="va">dat</span>, na.action <span class="op">=</span> <span class="va">na.pass</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">Y_nom</span> <span class="op">+</span> <span class="va">Group</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/proportions.html">prop.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">Y_nom</span> <span class="op">+</span> <span class="va">Group</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/addmargins.html">addmargins</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/proportions.html">prop.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Y_nom</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/barplot.html">barplot</a></span><span class="op">(</span><span class="fl">100</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">Y_nom</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">Y_nom</span><span class="op">)</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span>, ylab <span class="op">=</span> <span class="st">'Percentage'</span>, col <span class="op">=</span> <span class="st">'grey'</span>, main <span class="op">=</span> <span class="st">'Nominal'</span><span class="op">)</span>
+<span class="co">#---- </span>
+<span class="co"># Compare observed proportions to the probabilities:</span>
+ <span class="fu"><a href="https://rdrr.io/r/base/proportions.html">prop.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span><span class="op">)</span>
+ <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>
+  
 
+<span class="co"># Plot data:</span>
+ <span class="fu"><a href="https://rdrr.io/r/graphics/barplot.html">barplot</a></span><span class="op">(</span><span class="fl">100</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">Y_nom</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">Y_nom</span><span class="op">)</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span>, ylab <span class="op">=</span> <span class="st">'Percentage'</span>, col <span class="op">=</span> <span class="st">'grey'</span>, main <span class="op">=</span> <span class="st">'Nominal'</span><span class="op">)</span>
 
+ 
 <span class="co"># Fit Models:</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">nnet</a></span><span class="op">)</span>
 <span class="va">dat</span><span class="op">$</span><span class="va">Y_nom_factor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">Y_nom</span><span class="op">)</span>
@@ -210,16 +199,42 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">Beta</span><span class="op">)</span>
 
-<span class="co"># TODO: Try other R packages for fitting multinomial models</span>
-<span class="va">mod0</span> <span class="op">&lt;-</span> <span class="fu">nnet</span><span class="fu">:::</span><span class="fu"><a href="https://rdrr.io/pkg/nnet/man/multinom.html">multinom</a></span><span class="op">(</span><span class="va">Y_nom</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
-<span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu">nnet</span><span class="fu">:::</span><span class="fu"><a href="https://rdrr.io/pkg/nnet/man/multinom.html">multinom</a></span><span class="op">(</span><span class="va">Y_nom</span> <span class="op">~</span> <span class="va">Group</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">mod0</span>, <span class="va">mod1</span><span class="op">)</span></code></pre></div>
+<span class="co"># What are the estimates?</span>
+<span class="co"># Compute the odds ratios</span>
+
+<span class="co"># Cross tabs</span>
+<span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/addmargins.html">addmargins</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="op">~</span> <span class="va">Y_nom</span> <span class="op">+</span> <span class="va">Group</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>
+<span class="co"># Odds of selecting B over reference category A</span>
+<span class="va">G1</span> <span class="op">&lt;-</span> <span class="va">tab</span><span class="op">[</span><span class="st">'B'</span>, <span class="st">'Group_1'</span><span class="op">]</span> <span class="op">/</span><span class="va">tab</span><span class="op">[</span><span class="st">'A'</span>, <span class="st">'Group_1'</span><span class="op">]</span>
+<span class="va">G2</span> <span class="op">&lt;-</span> <span class="va">tab</span><span class="op">[</span><span class="st">'B'</span>, <span class="st">'Group_2'</span><span class="op">]</span> <span class="op">/</span><span class="va">tab</span><span class="op">[</span><span class="st">'A'</span>, <span class="st">'Group_2'</span><span class="op">]</span>
+<span class="va">G2</span><span class="op">/</span><span class="va">G1</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">[</span><span class="st">'B'</span>,<span class="st">'GroupGroup_2'</span><span class="op">]</span><span class="op">)</span>
+
+<span class="co"># Odds of selecting C over reference category A</span>
+<span class="va">G1</span> <span class="op">&lt;-</span> <span class="va">tab</span><span class="op">[</span><span class="st">'C'</span>, <span class="st">'Group_1'</span><span class="op">]</span> <span class="op">/</span><span class="va">tab</span><span class="op">[</span><span class="st">'A'</span>, <span class="st">'Group_1'</span><span class="op">]</span>
+<span class="va">G2</span> <span class="op">&lt;-</span> <span class="va">tab</span><span class="op">[</span><span class="st">'C'</span>, <span class="st">'Group_2'</span><span class="op">]</span> <span class="op">/</span><span class="va">tab</span><span class="op">[</span><span class="st">'A'</span>, <span class="st">'Group_2'</span><span class="op">]</span>
+<span class="va">G2</span><span class="op">/</span><span class="va">G1</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">[</span><span class="st">'C'</span>,<span class="st">'GroupGroup_2'</span><span class="op">]</span><span class="op">)</span>
+
+<span class="co"># Odds of selecting D over reference category A</span>
+<span class="va">G1</span> <span class="op">&lt;-</span> <span class="va">tab</span><span class="op">[</span><span class="st">'D'</span>, <span class="st">'Group_1'</span><span class="op">]</span> <span class="op">/</span><span class="va">tab</span><span class="op">[</span><span class="st">'A'</span>, <span class="st">'Group_1'</span><span class="op">]</span>
+<span class="va">G2</span> <span class="op">&lt;-</span> <span class="va">tab</span><span class="op">[</span><span class="st">'D'</span>, <span class="st">'Group_2'</span><span class="op">]</span> <span class="op">/</span><span class="va">tab</span><span class="op">[</span><span class="st">'A'</span>, <span class="st">'Group_2'</span><span class="op">]</span>
+<span class="va">G2</span><span class="op">/</span><span class="va">G1</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">[</span><span class="st">'D'</span>,<span class="st">'GroupGroup_2'</span><span class="op">]</span><span class="op">)</span>
+
+<span class="co"># Odds of selecting C over reference category A</span>
+<span class="va">G1</span> <span class="op">&lt;-</span> <span class="va">tab</span><span class="op">[</span><span class="st">'E'</span>, <span class="st">'Group_1'</span><span class="op">]</span> <span class="op">/</span><span class="va">tab</span><span class="op">[</span><span class="st">'A'</span>, <span class="st">'Group_1'</span><span class="op">]</span>
+<span class="va">G2</span> <span class="op">&lt;-</span> <span class="va">tab</span><span class="op">[</span><span class="st">'E'</span>, <span class="st">'Group_2'</span><span class="op">]</span> <span class="op">/</span><span class="va">tab</span><span class="op">[</span><span class="st">'A'</span>, <span class="st">'Group_2'</span><span class="op">]</span>
+<span class="va">G2</span><span class="op">/</span><span class="va">G1</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">[</span><span class="st">'E'</span>,<span class="st">'GroupGroup_2'</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="custom-estimation-code" class="section level2">
 <h2 class="hasAnchor">
 <a href="#custom-estimation-code" class="anchor"></a>Custom estimation code</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
+
 <span class="co"># Custom written estimation routine:</span>
 <span class="va">multinom_loglike</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vP</span>, <span class="va">X</span>, <span class="va">Y</span>, <span class="va">data</span>, <span class="va">k</span><span class="op">)</span><span class="op">{</span>
   
@@ -241,23 +256,36 @@
 
 <span class="co"># optimize</span>
 <span class="va">vP</span> <span class="op">&lt;-</span> <span class="va">Beta</span>
-<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/optim.html">optim</a></span><span class="op">(</span>par <span class="op">=</span> <span class="va">vP</span>, fn <span class="op">=</span> <span class="va">multinom_loglike</span>, method <span class="op">=</span> <span class="st">'BFGS'</span>, 
-             X <span class="op">=</span> <span class="va">X</span>, Y <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">Y_nom_factor</span>, data <span class="op">=</span> <span class="va">dat</span>, k <span class="op">=</span> <span class="va">k</span><span class="op">)</span>
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/optim.html">optim</a></span><span class="op">(</span>par <span class="op">=</span> <span class="va">vP</span>, 
+             fn <span class="op">=</span> <span class="va">multinom_loglike</span>, 
+             method <span class="op">=</span> <span class="st">'BFGS'</span>, 
+             hessian <span class="op">=</span> <span class="cn">T</span>,
+             X <span class="op">=</span> <span class="va">X</span>, 
+             Y <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">Y_nom_factor</span>, 
+             data <span class="op">=</span> <span class="va">dat</span>, 
+             k <span class="op">=</span> <span class="va">k</span><span class="op">)</span>
 <span class="co"># Compare Generating Parameter to nnet package estimate and the custom code estimate</span>
-<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">Beta</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">par</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind.data.frame</a></span><span class="op">(</span><span class="st">'Gen_param'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">Beta</span><span class="op">)</span>, 
+                 <span class="st">'nnet R package'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>, 
+                 <span class="st">'Custom code'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">par</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># Compare SE:</span>
+<span class="va">SE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/solve.html">solve</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">hessian</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind.data.frame</a></span><span class="op">(</span><span class="st">'nnet R package SE'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">$</span><span class="va">standard.errors</span>,
+                 <span class="st">'Custom code SE'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">SE</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="simulation-study-multinomial-data" class="section level1">
-<h1 class="hasAnchor">
-<a href="#simulation-study-multinomial-data" class="anchor"></a>Simulation Study, Multinomial Data</h1>
-<div id="evaluate-type-i-error-and-power" class="section level2">
+<div id="simulation-study-multinomial-data" class="section level2">
 <h2 class="hasAnchor">
-<a href="#evaluate-type-i-error-and-power" class="anchor"></a>Evaluate Type I error and Power</h2>
+<a href="#simulation-study-multinomial-data" class="anchor"></a>Simulation Study, Multinomial Data</h2>
+<div id="evaluate-type-i-error-and-power" class="section level3">
+<h3 class="hasAnchor">
+<a href="#evaluate-type-i-error-and-power" class="anchor"></a>Evaluate Type I error and Power</h3>
 <p>Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> and <code><a href="https://rdrr.io/r/base/load.html">load()</a></code> functions. Use the R code provided below.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">nnet</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/gc.html">gc</a></span><span class="op">(</span><span class="op">)</span>
 
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">nnet</a></span><span class="op">)</span>
 <span class="va">N</span> <span class="op">=</span> <span class="fl">100</span>
 <span class="va">number.groups</span> <span class="op">&lt;-</span> <span class="fl">2</span>
 <span class="va">number.timepoints</span> <span class="op">&lt;-</span> <span class="fl">1</span>
@@ -276,6 +304,8 @@
 <span class="co"># Create Beta</span>
 <span class="va">Beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">0</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="va">k</span> <span class="op">-</span> <span class="fl">1</span>, dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">'param'</span>, <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">k</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="va">Beta</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.8</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span><span class="op">)</span> <span class="co"># Intercepts</span>
+<span class="co"># Beta values will determine whether you're </span>
+<span class="co"># evaluating Type I error or Power:</span>
 <span class="co">#Beta[2, ] &lt;- 0 # Type I error</span>
 <span class="va">Beta</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="op">-</span><span class="fl">1.0</span>, <span class="op">-</span><span class="fl">0.6</span>, <span class="fl">0.8</span><span class="op">)</span>  <span class="co"># Power</span>
 
@@ -294,7 +324,7 @@
       
       <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="op">)</span>
     <span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
-      <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">Y</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span>, prob <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span>
+      <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">Y</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'A'</span>, <span class="st">'B'</span>, <span class="st">'C'</span>, <span class="st">'D'</span>, <span class="st">'E'</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span>, prob <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span>
       <span class="op">}</span> <span class="co">#end loop</span>
     
      <span class="va">dat</span><span class="op">$</span><span class="va">Y_nom</span> <span class="op">&lt;-</span> <span class="va">Y</span>
