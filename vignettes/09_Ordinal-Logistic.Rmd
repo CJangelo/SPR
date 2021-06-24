@@ -17,10 +17,6 @@ knitr::opts_chunk$set(
 
 
 ```{r logit1, eval = F}
-library(SPR)
-library(MASS)
-library(polycor)
-#source("C:/Users/ciaconangelo/Documents/RESEARCH/R_CODE_Long_Mixed_Models/Function_findRhoBin.R")
 
 N = 5000 #this should be divisible by however many groups you use!
 number.groups <- 2
@@ -45,9 +41,9 @@ Beta[] <- c(0.0, 2)
 XB <- X %*% Beta
 
 # Thresholds:
-thr <- c(-2, -1, 0, 1)
-eta <- matrix(XB, nrow = nrow(XB), ncol = length(thr), byrow = F) +
-  matrix(thr, nrow = nrow(XB), ncol = length(thr), byrow = T)
+thr <- c(0, 1, 2, 3)
+eta <- matrix(thr, nrow = nrow(XB), ncol = length(thr), byrow = T) - 
+  matrix(XB, nrow = nrow(XB), ncol = length(thr), byrow = F)
 
 p <- exp(eta)/(1 + exp(eta))
 dat$p <- p
@@ -59,8 +55,12 @@ barplot(100*table(dat$Y)/sum(table(dat$Y)),
         ylim = c(0, 100), ylab = 'Percentage',
         col = 'grey', main = 'Ordinal')
 
+#----
+# Key here is that this data is ORDERED
+
 
 # Fit Models:
+library(MASS)
 mod <- MASS:::polr(as.factor(Y) ~ Group , data= dat, method = 'logistic', Hess = T)
 summary(mod)
 mod$coefficients # can't estimate an intercept here
@@ -68,34 +68,53 @@ Beta
 mod$zeta
 thr
 
+library(ordinal)
+mod.clm <- clm(as.factor(Y) ~ Group, data = dat)
+summary(mod.clm)
+mod.clm$beta
 # Compute odds ratios by hand
 # Examine the proportional odds assumption
 # Notice that it's not exact
-addmargins(xtabs(~ Y + Group, data = dat), 1)
-# P <= 0
-G1 <- (289)/(2500-289)
-G2 <- (1226)/(2500-1226)
-exp(2)
+tab <- addmargins(xtabs(~ Y + Group, data = dat), 1)
+#
+# >0
+G1 <- (tab['Sum', 'Group_1'] - tab['0','Group_1'])/tab['0', 'Group_1']
+G2 <- (tab['Sum', 'Group_2'] - tab['0','Group_2'])/tab['0', 'Group_2']
 G2/G1
-# P <= 1
-G1 <- (289+378)/(2500-289-378)
-G2 <- (1226+574)/(2500-1226-574)
+exp(mod.clm$beta)
+#
+# > 1 (includes 0 and 1 categories)
+G1 <- (tab['Sum', 'Group_1'] - sum(tab[c('0', '1'), 'Group_1']))/
+  sum(tab[c('0', '1'), 'Group_1'])
+G2 <- (tab['Sum', 'Group_2'] - sum(tab[c('0', '1'), 'Group_2']))/
+  sum(tab[c('0', '1'), 'Group_2'])
 G2/G1
-# P <= 2
-G1 <- (289+378+574)/(2500-289-378-574)
-G2 <- (1226+574+394)/(2500-1226-574-394)
+exp(mod.clm$beta)
+#
+# > 2 (includes 0, 1, 2)
+G1 <- (tab['Sum', 'Group_1'] - sum(tab[c('0', '1', '2'), 'Group_1']))/
+  sum(tab[c('0', '1', '2'), 'Group_1'])
+G2 <- (tab['Sum', 'Group_2'] - sum(tab[c('0', '1', '2'), 'Group_2']))/
+  sum(tab[c('0', '1', '2'), 'Group_2'])
 G2/G1
-#... you can do the rest...
-
+exp(mod.clm$beta)
+#
+# > 3 (includes 0, 1, 2, 3)
+G1 <- (tab['Sum', 'Group_1'] - sum(tab[c('0', '1', '2', '3'), 'Group_1']))/
+  sum(tab[c('0', '1', '2', '3'), 'Group_1'])
+G2 <- (tab['Sum', 'Group_2'] - sum(tab[c('0', '1', '2', '3'), 'Group_2']))/
+  sum(tab[c('0', '1', '2', '3'), 'Group_2'])
+G2/G1
+exp(mod.clm$beta)
+#
 
 ```
 
 
 ## Custom Estimation R code
 
-### Ordinal Logistic Estimation, version 1
+### Ordinal Logistic Estimation
 
-This should align with the `MASS::polr()` estimates.
 
 ```{r custom1, eval = F}
 
@@ -105,10 +124,10 @@ ord_loglike <- function(vP, X, Y, k){
   N <- nrow(X)
   Y <- Y + 1 # Must start at 1!
   XX <- X[ , -1, drop = F] # drop intercept
-  XB <- XX %*% -1*vP[1] # Not sure why polr parameterizes it this way
+  XB <- XX %*% vP[1] # Not sure why polr parameterizes it this way
   XB <- XB %*% matrix(1, nrow = ncol(XB), ncol = k)
-  XB <- XB + matrix(vP[-1], nrow = nrow(XB), ncol = k, byrow = T)
-  p <- exp(XB)/(1 + exp(XB))
+  eta <- matrix(vP[-1], nrow = nrow(XB), ncol = k, byrow = T) - XB
+  p <- exp(eta)/(1 + exp(eta))
   p <- cbind(0, p, 1)
   
   like <- p[cbind(1:N, Y + 1)] - p[cbind(1:N, Y)]  
@@ -121,65 +140,91 @@ ord_loglike <- function(vP, X, Y, k){
 
 # optimize
 # Set starting values:
-Y <- dat$Y_ord + 1
+Y <- dat$Y + 1
 intercepts.hat = matrix(NA, nrow = 1, ncol = length(unique(Y)) - 1)
-  for(score in 2:length(unique(Y))){
-intercepts.hat[ , score -1] = log(mean(Y >= score, na.rm =T))
+  for (score in 2:length(unique(Y))){
+    intercepts.hat[ , score -1] = log(mean(Y >= score, na.rm =T))
   }
 
+# vP is the vector of parameters passed to the optim() function
 vP <- c(1, -1*intercepts.hat)
-out <- optim(par = vP, fn = ord_loglike, method = 'BFGS', 
-             X = X, Y = dat$Y_ord,  k = length(thresholds))
+# optim() function optimizes the objective function
+out <- optim(par = vP, 
+             hessian = T,
+             fn = ord_loglike, 
+             method = 'BFGS', 
+             X = X, 
+             Y = dat$Y,  
+             k = length(intercepts.hat))
+
 # Compare Generating Parameter to R package estimate and the custom code estimate
-summary(mod.logit)
-mod.logit$coefficients
-out$par
+cbind('polr() estimate' = c(mod$coefficients, mod$zeta), 
+      'clm() estimate' = c(mod.clm$beta, mod.clm$alpha), 
+      'custom code' = out$par) 
+      
+# Standard errors:
+SE <- sqrt(diag(solve(out$hessian)))
+zval <- out$par/SE
+2*(1-pnorm(zval[1]))
+summary(mod.clm)
 
 ```
+## Simulation Study, Check Type I error
+
+The ordinal R package uses Z-tests, compare the Type I error control of that to the t-distribution. 
+
+```{r simstudy, eval = F}
+rm(list = ls())
+gc()
+
+library(ordinal)
 
 
-### Ordinal Logistic version 2
+N = 100 #this should be divisible by however many groups you use!
+number.groups <- 2
+number.timepoints <- 1
+number.repl <- 1000
+out <- vector()
 
-This version flips the signs of the intercepts compared to `MASS::polr()`. 
-
-
-```{r custom2, eval = F}
-
-# Custom written estimation routine:
-ord_loglike <- function(vP, X, Y, k){
+for (repl in 1:number.repl){
   
-  N <- nrow(X)
-  Y <- Y + 1 # Must start at 1!
-  XX <- X[ , -1, drop = F] # drop intercept
-  XB <- XX %*% vP[1] 
-  XB <- XB %*% matrix(1, nrow = ncol(XB), ncol = k)
-  XB <- XB + matrix(vP[-1], nrow = nrow(XB), ncol = k, byrow = T)
-  p <- exp(XB)/(1 + exp(XB))
-  p <- cbind(1, p, 0)
+  set.seed(6242021 + repl)
 
-  like <- p[cbind(1:N, Y)] - p[cbind(1:N, Y + 1)]  
-  loglike <- log(like)
-  loglike <- -1*sum(loglike, na.rm = F)
-  return(loglike)
-  
+dat <- data.frame(
+                  'USUBJID' = rep(paste0('Subject_', formatC(1:N, width = 4, flag = '0')), length.out= N*number.timepoints),
+                  'Group' = rep(paste0('Group_', 1:number.groups), length.out = N*number.timepoints),
+                  stringsAsFactors=F)
+
+
+X <- model.matrix( ~ Group  , data = dat)
+Beta <- matrix(0, nrow = ncol(X), dimnames=list(colnames(X), 'param'))
+Beta[] <- c(0.0, 0)
+XB <- X %*% Beta
+thr <- c(0, 1, 2, 3)
+eta <- matrix(thr, nrow = nrow(XB), ncol = length(thr), byrow = T) -
+  matrix(XB, nrow = nrow(XB), ncol = length(thr), byrow = F)
+
+p <- exp(eta)/(1 + exp(eta))
+dat$p <- p
+dat$Y <- apply(runif(n = N)  > p, 1, sum)
+
+
+library(ordinal)
+mod.clm <- clm(as.factor(Y) ~ Group, data = dat)
+mod.out <- summary(mod.clm)
+pval.z <- mod.out$coef['GroupGroup_2', 'Pr(>|z|)']
+
+tval <- mod.out$coef['GroupGroup_2', 'Estimate']/
+  mod.out$coef['GroupGroup_2', 'Std. Error']
+#tval #yes, same as the zvalue reported out
+#2*(1-pnorm(tval)) # This is model reported out, use t-distribution:
+pval.t <- 2*(1-pt(q = tval, df = N - length(coef(mod.clm))))
+out <- rbind(out, c(pval.z, pval.t))
+cat('Replication: ', repl, '\n')
+
 }
 
 
-# optimize
-# Set starting values:
-Y <- dat$Y_ord + 1
-intercepts.hat = matrix(NA, nrow = 1, ncol = length(unique(Y)) - 1)
-  for(score in 2:length(unique(Y))){
-intercepts.hat[ , score -1] = log(mean(Y >= score, na.rm =T))
-  }
-
-vP <- c(1, intercepts.hat)
-out <- optim(par = vP, fn = ord_loglike, method = 'BFGS', 
-             X = X, Y = dat$Y_ord,  k = length(thresholds))
-# Compare Generating Parameter to R package estimate and the custom code estimate
-summary(mod.logit)
-mod.logit$coefficients
-out$par
-
+colMeans(out < 0.05)
 
 ```
