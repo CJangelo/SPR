@@ -1,7 +1,7 @@
 ########################################################
 #
 #
-#           GENERATE 
+#           GENERATE
 #           Multinomial Model
 #           Cross sectional
 #
@@ -11,10 +11,6 @@
 
 rm(list = ls())
 gc()
-
-library(MASS)
-library(polycor)
-#source("C:/Users/ciaconangelo/Documents/RESEARCH/R_CODE_Long_Mixed_Models/Function_findRhoBin.R")
 
 N = 1e4 #this should be divisible by however many groups you use!
 number.groups <- 2
@@ -28,7 +24,7 @@ dat <- data.frame(
 
 
 # Create Beta parameters for these design matrix:
-X <- model.matrix( ~ Group  , data = dat) 
+X <- model.matrix( ~ Group  , data = dat)
 
 k <- 5 # Number of categories in the nominal item
 
@@ -47,21 +43,22 @@ p <- cbind(param0, p)
 
   out <- vector()
 for(i in 1:nrow(p)){
-  out <- c(out, 
-           sample(x = c(0, 1, 2, 3, 4), size = 1, prob = p[i, ])  
+  out <- c(out,
+           sample(x = c('A', 'B', 'C', 'D', 'E'), size = 1, prob = p[i, ])
   )
-  
+
 } #end loop
- prop.table(table(out))
- colMeans(p)
-  
+
  dat$Y_nom <- out
 
-aggregate(Y_nom ~ Group, FUN = function(x) table(x), dat = dat, na.action = na.pass)
-xtabs( ~ Y_nom + Group, data = dat)
-prop.table(xtabs( ~ Y_nom + Group, data = dat))
-addmargins(prop.table(xtabs( ~ Group + Y_nom, data = dat), 1), 2)
-barplot(100*table(dat$Y_nom)/sum(table(dat$Y_nom)), ylim = c(0, 100), ylab = 'Percentage', col = 'grey', main = 'Nominal')
+#----
+# Compare observed proportions to the probabilities:
+ prop.table(table(out))
+ colMeans(p)
+
+
+# Plot data:
+ barplot(100*table(dat$Y_nom)/sum(table(dat$Y_nom)), ylim = c(0, 100), ylab = 'Percentage', col = 'grey', main = 'Nominal')
 
 
 # Fit Models:
@@ -72,7 +69,33 @@ summary(mod)
 coef(mod)
 t(Beta)
 
-# TODO: Try other R packages for fitting multinomial models
-mod0 <- nnet:::multinom(Y_nom ~ 1, data = dat)
-mod1 <- nnet:::multinom(Y_nom ~ Group, data = dat)
-anova(mod0, mod1)
+# What are the estimates?
+# Compute the odds ratios
+
+# Cross tabs
+tab <- addmargins(xtabs(~ Y_nom + Group, data = dat), 1)
+coef(mod)
+# Odds of selecting B over reference category A
+G1 <- tab['B', 'Group_1'] /tab['A', 'Group_1']
+G2 <- tab['B', 'Group_2'] /tab['A', 'Group_2']
+G2/G1
+exp(coef(mod)['B','GroupGroup_2'])
+
+# Odds of selecting C over reference category A
+G1 <- tab['C', 'Group_1'] /tab['A', 'Group_1']
+G2 <- tab['C', 'Group_2'] /tab['A', 'Group_2']
+G2/G1
+exp(coef(mod)['C','GroupGroup_2'])
+
+# Odds of selecting D over reference category A
+G1 <- tab['D', 'Group_1'] /tab['A', 'Group_1']
+G2 <- tab['D', 'Group_2'] /tab['A', 'Group_2']
+G2/G1
+exp(coef(mod)['D','GroupGroup_2'])
+
+# Odds of selecting C over reference category A
+G1 <- tab['E', 'Group_1'] /tab['A', 'Group_1']
+G2 <- tab['E', 'Group_2'] /tab['A', 'Group_2']
+G2/G1
+exp(coef(mod)['E','GroupGroup_2'])
+
