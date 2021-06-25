@@ -81,10 +81,13 @@
       <a href="../articles/13_CLMM_probit.html">Longitudinal Ordinal Data (Probit)</a>
     </li>
     <li>
-      <a href="../articles/14_CLMM_logistic.html">Longitudinal Ordinal Data (Logistic)</a>
+      <a href="../articles/14_CLMM_logistic.html">Longitudinal Ordinal Data (Logistic, Marginal)</a>
     </li>
     <li>
       <a href="../articles/15_CLMM_conditional.html">Longitudinal Ordinal Data, Conditional Specification</a>
+    </li>
+    <li>
+      <a href="../articles/CLMM_dropout.html">Modeling Longitudinal Data</a>
     </li>
     <li>
       <a href="../articles/Vignette_1.html">Vignette_1</a>
@@ -136,7 +139,24 @@
 
     
     
-<p>First step is to recover estimates with full data 1. use GEE 2. use GLMM and then convert back to population average estimate 3. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650580/#R11" class="uri">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650580/#R11</a> 4. <a href="https://projecteuclid.org/download/pdf_1/euclid.ss/1009212671" class="uri">https://projecteuclid.org/download/pdf_1/euclid.ss/1009212671</a></p>
+<div id="data-generation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#data-generation" class="anchor"></a>Data Generation</h2>
+<ol style="list-style-type: decimal">
+<li>Generate longitudinal binomial data</li>
+<li>Marginal model - ordinal GEE should work.</li>
+</ol>
+</div>
+<div id="simulation-study" class="section level2">
+<h2 class="hasAnchor">
+<a href="#simulation-study" class="anchor"></a>Simulation Study</h2>
+<p>First step is to recover estimates with full data</p>
+<ol style="list-style-type: decimal">
+<li>use GEE</li>
+<li>use GLMM and then convert back to population average estimate</li>
+<li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650580/#R11" class="uri">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650580/#R11</a></li>
+<li><a href="https://projecteuclid.org/download/pdf_1/euclid.ss/1009212671" class="uri">https://projecteuclid.org/download/pdf_1/euclid.ss/1009212671</a></li>
+</ol>
 <p>Next is to figure out a way to compute the standard errors of the population average. Unclear how to do that unless you bootstrap.</p>
 <p>After that, test using missing data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -218,11 +238,14 @@
   <span class="va">out2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">out</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">x</span>, nm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">sim.out</span><span class="op">$</span><span class="va">Beta</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
   <span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">out2</span>, <span class="va">colMeans</span><span class="op">)</span>
   <span class="va">out3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">sim.out</span><span class="op">$</span><span class="va">Beta</span>, <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind.data.frame</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 

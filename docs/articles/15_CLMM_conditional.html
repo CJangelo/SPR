@@ -81,10 +81,13 @@
       <a href="../articles/13_CLMM_probit.html">Longitudinal Ordinal Data (Probit)</a>
     </li>
     <li>
-      <a href="../articles/14_CLMM_logistic.html">Longitudinal Ordinal Data (Logistic)</a>
+      <a href="../articles/14_CLMM_logistic.html">Longitudinal Ordinal Data (Logistic, Marginal)</a>
     </li>
     <li>
       <a href="../articles/15_CLMM_conditional.html">Longitudinal Ordinal Data, Conditional Specification</a>
+    </li>
+    <li>
+      <a href="../articles/CLMM_dropout.html">Modeling Longitudinal Data</a>
     </li>
     <li>
       <a href="../articles/Vignette_1.html">Vignette_1</a>
@@ -137,67 +140,285 @@
     
     
 <p>Generated data using conditional model - other CLMM Vignettes were using marginal data generation.</p>
-<p>TODO: run a simulation study to check model parameter recovery; there looks to be something suspect going on with the Beta, all the interactions have the same beta value.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SPR</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">MASS</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-forge.r-project.org/projects/polycor/">polycor</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rvlenth/emmeans">emmeans</a></span><span class="op">)</span>
+<div id="data-generation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#data-generation" class="anchor"></a>Data Generation</h2>
+<ol style="list-style-type: decimal">
+<li>Generate longitudinal ordinal data</li>
+<li>Logistic specification</li>
+<li>Conditional specification - random intercepts</li>
+</ol>
+</div>
+<div id="simulation-study-1-conditional-data-generation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#simulation-study-1-conditional-data-generation" class="anchor"></a>Simulation Study 1, Conditional Data Generation</h2>
+<p>The conditional data generation does NOT allow you to just fit a model without random intercepts. This is distinct from the marginal models! With marginal models only the SE is affected; with conditional models, you can’t ignore the subject effects or else you bias the estimates. So of course the fixed effects only model <code><a href="https://rdrr.io/pkg/ordinal/man/clm.html">clm()</a></code> won’t handle missing data correctly, because it can’t handle complete data correctly!</p>
+<div id="spoiler-results-simulation-study-1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#spoiler-results-simulation-study-1" class="anchor"></a>Spoiler: Results, Simulation Study 1</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>                            clm          gee         clmm</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span><span class="sc">|</span><span class="dv">1</span>                     <span class="sc">-</span><span class="fl">1.503910258</span> <span class="sc">-</span><span class="fl">1.504229339</span> <span class="sc">-</span><span class="fl">2.029189347</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">|</span><span class="dv">2</span>                      <span class="fl">0.012948946</span>  <span class="fl">0.012290884</span>  <span class="fl">0.009714282</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">|</span><span class="dv">3</span>                      <span class="fl">1.497568976</span>  <span class="fl">1.496833165</span>  <span class="fl">2.035309535</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>GroupGroup_2            <span class="sc">-</span><span class="fl">0.001289427</span>  <span class="fl">0.005188065</span> <span class="sc">-</span><span class="fl">0.001165598</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>TimeTime_2              <span class="sc">-</span><span class="fl">0.004865262</span>  <span class="fl">0.022942622</span> <span class="sc">-</span><span class="fl">0.007264689</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>TimeTime_3              <span class="sc">-</span><span class="fl">0.022885972</span> <span class="sc">-</span><span class="fl">0.011805839</span> <span class="sc">-</span><span class="fl">0.031622008</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>TimeTime_4               <span class="fl">0.011694160</span>  <span class="fl">0.003421927</span>  <span class="fl">0.014869004</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>GroupGroup_2<span class="sc">:</span>TimeTime_2  <span class="fl">0.202491944</span> <span class="sc">-</span><span class="fl">0.202849533</span>  <span class="fl">0.270631754</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>GroupGroup_2<span class="sc">:</span>TimeTime_3  <span class="fl">0.500235452</span> <span class="sc">-</span><span class="fl">0.501617735</span>  <span class="fl">0.675335162</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>GroupGroup_2<span class="sc">:</span>TimeTime_4  <span class="fl">0.748884352</span> <span class="sc">-</span><span class="fl">0.749870769</span>  <span class="fl">1.012121149</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a> <span class="co"># Marginal means:</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">cbind</span>(<span class="st">'clm'</span> <span class="ot">=</span> <span class="fu">colMeans</span>(out.emms.clm), </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>       <span class="st">'clmm'</span> <span class="ot">=</span> <span class="fu">colMeans</span>(out.emms.clmm))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>              clm         clmm</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]  <span class="fl">0.001289427</span>  <span class="fl">0.001165598</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,] <span class="sc">-</span><span class="fl">0.201202517</span> <span class="sc">-</span><span class="fl">0.269466156</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,] <span class="sc">-</span><span class="fl">0.498946025</span> <span class="sc">-</span><span class="fl">0.674169564</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,] <span class="sc">-</span><span class="fl">0.747594924</span> <span class="sc">-</span><span class="fl">1.010955551</span> </span></code></pre></div>
+</div>
+<div id="simulation-study-1-code" class="section level3">
+<h3 class="hasAnchor">
+<a href="#simulation-study-1-code" class="anchor"></a>Simulation Study 1 code</h3>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/gc.html">gc</a></span><span class="op">(</span><span class="op">)</span>
 
- <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">6212021</span><span class="op">)</span>
-
- <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_dat_ord_logistic_conditional.html">sim_dat_ord_logistic_conditional</a></span><span class="op">(</span>N <span class="op">=</span> <span class="fl">500</span>,
-                                         number.groups <span class="op">=</span> <span class="fl">2</span> ,
-                                         number.timepoints <span class="op">=</span> <span class="fl">4</span>,
-                                         reg.formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html">formula</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span><span class="op">*</span><span class="va">Group</span><span class="op">)</span>,
-                                         Beta <span class="op">=</span> <span class="fl">0.5</span>,
-                                         thresholds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="fl">0</span><span class="op">)</span>,
-                                         subject.var <span class="op">=</span> <span class="fl">2</span>,
-                                         cond.mcar <span class="op">=</span> <span class="cn">F</span>,
-                                         Covariate <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>
-
-
-  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">out</span><span class="op">$</span><span class="va">dat</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>
-
-<span class="co"># Check the correlations:</span>
-<span class="fu"><a href="https://rdrr.io/pkg/polycor/man/polychor.html">polychor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">Y_comp</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">Time</span> <span class="op">==</span> <span class="st">'Time_1'</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">Y_comp</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">Time</span> <span class="op">==</span> <span class="st">'Time_2'</span><span class="op">]</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/polycor/man/polychor.html">polychor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">Y_comp</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">Time</span> <span class="op">==</span> <span class="st">'Time_2'</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">Y_comp</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">Time</span> <span class="op">==</span> <span class="st">'Time_3'</span><span class="op">]</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/polycor/man/polychor.html">polychor</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">Y_comp</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">Time</span> <span class="op">==</span> <span class="st">'Time_3'</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">Y_comp</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">Time</span> <span class="op">==</span> <span class="st">'Time_4'</span><span class="op">]</span><span class="op">)</span>
-
-
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SPR</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/runehaubo/ordinal">ordinal</a></span><span class="op">)</span>
-<span class="va">mod.clm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ordinal/man/clm.html">clm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">Y_comp</span><span class="op">)</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span><span class="op">*</span><span class="va">Time</span>, data<span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod.clm</span><span class="op">)</span>
-<span class="va">out</span><span class="op">$</span><span class="va">Beta</span>
-<span class="va">out</span><span class="op">$</span><span class="va">thresholds</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/AnestisTouloumis/multgee">multgee</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rvlenth/emmeans">emmeans</a></span><span class="op">)</span>
-<span class="fu">emmeans</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/emmeans/man/emmeans.html">emmeans</a></span><span class="op">(</span><span class="va">mod.clm</span>, <span class="va">pairwise</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">|</span> <span class="va">Time</span><span class="op">)</span>
 
-<span class="va">st</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">mod.clmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ordinal/man/clmm.html">clmm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">Y_comp</span><span class="op">)</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span><span class="op">*</span><span class="va">Time</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">USUBJID</span><span class="op">)</span>,
-                 data<span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
+<span class="co"># Initialize output:</span>
+<span class="va">out.clm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">out.clmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">out.gee</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">out.emms.clm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">out.emms.clmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">number.repl</span> <span class="op">&lt;-</span> <span class="fl">100</span>
+
+
+<span class="co">#--------------------------</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">repl</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">number.repl</span><span class="op">)</span> <span class="op">{</span>
+
+  <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">6252021</span> <span class="op">+</span> <span class="va">repl</span><span class="op">)</span>
+
+  <span class="va">sim.out</span> <span class="op">&lt;-</span> <span class="fu">SPR</span><span class="fu">::</span><span class="fu"><a href="../reference/sim_dat_ord_logistic_conditional.html">sim_dat_ord_logistic_conditional</a></span><span class="op">(</span>N <span class="op">=</span> <span class="fl">300</span>,
+                                                   number.groups <span class="op">=</span> <span class="fl">2</span> ,
+                                                   number.timepoints <span class="op">=</span> <span class="fl">4</span>,
+                                                   reg.formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html">formula</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span><span class="op">*</span><span class="va">Group</span><span class="op">)</span>,
+                                                   Beta <span class="op">=</span> <span class="fl">1</span>,
+                                                   thresholds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>,
+                                                   subject.var <span class="op">=</span> <span class="fl">2</span>,
+                                                   cond.mcar <span class="op">=</span> <span class="cn">F</span>,
+                                                   Covariate <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>
+
+
+  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">sim.out</span><span class="op">$</span><span class="va">dat</span>
+
+
+
+<span class="co"># Visualization:</span>
+  <span class="co"># Quick barplot, base R plot functions</span>
+  <span class="co"># barplot(100*table(dat$Y_comp)/sum(table(dat$Y_comp)),</span>
+  <span class="co">#       ylim = c(0, 100), ylab = 'Percentage',</span>
+  <span class="co">#       col = 'grey', main = 'Ordinal')</span>
+
+
+
+<span class="co">#------------</span>
+  <span class="co"># CLM</span>
+  <span class="va">mod.clm</span> <span class="op">&lt;-</span> <span class="fu">ordinal</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ordinal/man/clm.html">clm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">Y_comp</span><span class="op">)</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span><span class="op">*</span><span class="va">Time</span>,
+                          nAGQ <span class="op">=</span> <span class="fl">5</span>, data<span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
+
+
+  <span class="co"># CLMM - Random Effect</span>
+  <span class="va">mod.clmm</span> <span class="op">&lt;-</span> <span class="fu">ordinal</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ordinal/man/clmm.html">clmm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">Y_comp</span><span class="op">)</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span><span class="op">*</span><span class="va">Time</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">USUBJID</span><span class="op">)</span>,
+                            nAGQ <span class="op">=</span> <span class="fl">5</span>, data<span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
+
+
+  <span class="co"># Generalized Estimating Equations:</span>
+  <span class="va">dat.gee</span> <span class="op">&lt;-</span> <span class="va">dat</span>
+  <span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">dat.gee</span><span class="op">$</span><span class="va">id.geepack</span><span class="op">)</span>
+  <span class="va">dat.gee</span> <span class="op">&lt;-</span> <span class="va">dat.gee</span><span class="op">[</span><span class="va">tmp</span>, <span class="op">]</span>
+  <span class="va">mod.gee</span> <span class="op">&lt;-</span> <span class="fu">multgee</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/multgee/man/ordLORgee.html">ordLORgee</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">Y_comp</span> <span class="op">~</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span><span class="op">*</span><span class="va">Group</span>,
+                                data <span class="op">=</span> <span class="va">dat.gee</span>,
+                                id <span class="op">=</span> <span class="va">id.geepack</span>,
+                                repeated <span class="op">=</span> <span class="va">Time</span>, LORstr <span class="op">=</span> <span class="st">"uniform"</span><span class="op">)</span>
+
+
+  <span class="co"># Marginal Means</span>
+  <span class="co"># emmeans::emmeans(mod.gee, pairwise ~ Group | Time) NOT AVAILABLE</span>
+  <span class="va">emm.clm</span> <span class="op">&lt;-</span> <span class="fu">emmeans</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/emmeans/man/emmeans.html">emmeans</a></span><span class="op">(</span><span class="va">mod.clm</span>, <span class="va">pairwise</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">|</span> <span class="va">Time</span><span class="op">)</span>
+  <span class="va">emm.clmm</span> <span class="op">&lt;-</span> <span class="fu">emmeans</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/emmeans/man/emmeans.html">emmeans</a></span><span class="op">(</span><span class="va">mod.clmm</span>, <span class="va">pairwise</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">|</span> <span class="va">Time</span><span class="op">)</span>
+
+
+  <span class="co"># Output</span>
+  <span class="va">out.gee</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">out.gee</span>, <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod.gee</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">out.clm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">out.clm</span>, <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod.clm</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">out.clmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">out.clmm</span>, <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod.clmm</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">out.emms.clm</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">out.emms.clm</span>,
+                         <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">emm.clm</span><span class="op">$</span><span class="va">contrast</span><span class="op">)</span><span class="op">$</span><span class="va">estimate</span><span class="op">)</span>
+  <span class="va">out.emms.clmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">out.emms.clmm</span>,
+                         <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">emm.clmm</span><span class="op">$</span><span class="va">contrast</span><span class="op">)</span><span class="op">$</span><span class="va">estimate</span><span class="op">)</span>
+
+
+
+  <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">'Replication: '</span>, <span class="va">repl</span>, <span class="st">'\n'</span><span class="op">)</span><span class="op">)</span>
+
+<span class="op">}</span><span class="co"># end replications</span>
+
+<span class="va">sim.out</span><span class="op">$</span><span class="va">Beta</span>
+<span class="va">sim.out</span><span class="op">$</span><span class="va">thresholds</span>
+<span class="co"># All parameters</span>
+<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="st">'clm'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span><span class="op">(</span><span class="va">out.clm</span><span class="op">)</span>, 
+      <span class="st">'gee'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span><span class="op">(</span><span class="va">out.gee</span><span class="op">)</span>, 
+      <span class="st">'clmm'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span><span class="op">(</span><span class="va">out.clmm</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># Marginal means:</span>
+<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="st">'clm'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span><span class="op">(</span><span class="va">out.emms.clm</span><span class="op">)</span>, 
+      <span class="st">'clmm'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span><span class="op">(</span><span class="va">out.emms.clmm</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div id="simulation-study-2-drop-out" class="section level2">
+<h2 class="hasAnchor">
+<a href="#simulation-study-2-drop-out" class="anchor"></a>Simulation Study 2, Drop-out</h2>
+<p>How does the conditional model handle drop-out? Results of simulation study show that it behaves the way you would expect - the CLMM returns unbiased estimates under MAR drop-out, and biased estimates under MNAR.</p>
+<div id="spoiler-results-of-simulation-study-2" class="section level3">
+<h3 class="hasAnchor">
+<a href="#spoiler-results-of-simulation-study-2" class="anchor"></a>Spoiler: results of simulation study 2</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> tab.out[tab.out<span class="sc">$</span>Param_type <span class="sc">==</span> <span class="st">'GroupGroup_2:TimeTime_4'</span>, ]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>       Data              Param_type  Estimate        Bias</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="dv">41</span> Complete GroupGroup_2<span class="sc">:</span>TimeTime_4 <span class="fl">1.0121211</span>  <span class="fl">0.01212115</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="dv">42</span>     MCAR GroupGroup_2<span class="sc">:</span>TimeTime_4 <span class="fl">1.0204622</span>  <span class="fl">0.02046216</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="dv">43</span>      MAR GroupGroup_2<span class="sc">:</span>TimeTime_4 <span class="fl">1.0163423</span>  <span class="fl">0.01634231</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="dv">44</span>     MNAR GroupGroup_2<span class="sc">:</span>TimeTime_4 <span class="fl">0.8633878</span> <span class="sc">-</span><span class="fl">0.13661223</span></span></code></pre></div>
+</div>
+<div id="simulation-study-code" class="section level3">
+<h3 class="hasAnchor">
+<a href="#simulation-study-code" class="anchor"></a>Simulation Study code</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/gc.html">gc</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SPR</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/runehaubo/ordinal">ordinal</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rvlenth/emmeans">emmeans</a></span><span class="op">)</span>
+
+<span class="co"># Initialize output:</span>
+<span class="va">score.names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Y_comp'</span>, <span class="st">'Y_mcar'</span>, <span class="st">'Y_mar'</span>, <span class="st">'Y_mnar'</span><span class="op">)</span>
+
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="st">'Param_type'</span> <span class="op">=</span> <span class="cn">NA</span>,
+                  <span class="st">'Data'</span> <span class="op">=</span> <span class="cn">NA</span>,
+                  <span class="st">'Estimate'</span> <span class="op">=</span> <span class="cn">NA</span>,
+                  <span class="st">'Gen_param'</span> <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span>
+
+<span class="va">number.repl</span> <span class="op">&lt;-</span> <span class="fl">100</span>
+
+
+<span class="co">#--------------------------</span>
+  <span class="va">st</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">repl</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">number.repl</span><span class="op">)</span> <span class="op">{</span>
+
+  <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">6252021</span> <span class="op">+</span> <span class="va">repl</span><span class="op">)</span>
+
+  <span class="va">sim.out</span> <span class="op">&lt;-</span> <span class="fu">SPR</span><span class="fu">::</span><span class="fu"><a href="../reference/sim_dat_ord_logistic_conditional.html">sim_dat_ord_logistic_conditional</a></span><span class="op">(</span>
+    N <span class="op">=</span> <span class="fl">300</span>,
+    number.groups <span class="op">=</span> <span class="fl">2</span> ,
+    number.timepoints <span class="op">=</span> <span class="fl">4</span>,
+    reg.formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html">formula</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span><span class="op">*</span><span class="va">Group</span><span class="op">)</span>,
+    Beta <span class="op">=</span> <span class="fl">1</span>,
+    thresholds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>,
+    subject.var <span class="op">=</span> <span class="fl">2</span>,
+    cond.mcar <span class="op">=</span> <span class="cn">F</span>,
+    Covariate <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>
+
+
+  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">sim.out</span><span class="op">$</span><span class="va">dat</span>
+
+  <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu">SPR</span><span class="fu">::</span><span class="fu"><a href="../reference/dropout.html">dropout</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">dat</span>,
+                      type_dropout  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'mcar'</span>, <span class="st">'mar'</span>, <span class="st">'mnar'</span><span class="op">)</span>,
+                      prop.miss <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>
+
+
+  <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">Y_mar</span> <span class="op">~</span> <span class="va">Time</span>, FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>,
+            na.action <span class="op">=</span> <span class="va">na.pass</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
+
+  <span class="kw">for</span> <span class="op">(</span><span class="va">score</span> <span class="kw">in</span> <span class="va">score.names</span><span class="op">)</span> <span class="op">{</span>
+
+    <span class="co"># formula:</span>
+    <span class="va">mf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">'ordered('</span>, <span class="va">score</span>,<span class="st">') ~ Group + Time + Group*Time + (1|USUBJID)'</span><span class="op">)</span><span class="op">)</span>
+
+    <span class="co"># CLMM - Random Effect</span>
+    <span class="va">mod.clmm</span> <span class="op">&lt;-</span> <span class="fu">ordinal</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ordinal/man/clmm.html">clmm</a></span><span class="op">(</span><span class="va">mf</span>, nAGQ <span class="op">=</span> <span class="fl">5</span>, data<span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
+
+    <span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+      <span class="st">'Param_type'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod.clmm</span><span class="op">)</span><span class="op">)</span>,
+      <span class="st">'Data'</span> <span class="op">=</span> <span class="va">score</span>,
+      <span class="st">'Estimate'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod.clmm</span><span class="op">)</span>,
+      <span class="st">'Gen_param'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">sim.out</span><span class="op">$</span><span class="va">thresholds</span>, <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">sim.out</span><span class="op">$</span><span class="va">Beta</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+    <span class="co"># drop the intercept from Beta!</span>
+
+    <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind.data.frame</a></span><span class="op">(</span><span class="va">out</span>, <span class="va">tmp</span><span class="op">)</span>
+
+    <span class="co"># Marginal Means</span>
+    <span class="va">emm.clmm</span> <span class="op">&lt;-</span>
+      <span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressMessages</a></span><span class="op">(</span>
+        <span class="fu">emmeans</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/emmeans/man/emmeans.html">emmeans</a></span><span class="op">(</span><span class="va">mod.clmm</span>, <span class="va">pairwise</span> <span class="op">~</span> <span class="va">Group</span> <span class="op">|</span> <span class="va">Time</span><span class="op">)</span>
+      <span class="op">)</span>
+
+    <span class="va">emm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">emm.clmm</span><span class="op">$</span><span class="va">contrasts</span><span class="op">)</span>
+
+    <span class="co"># Output</span>
+    <span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+      <span class="st">'Param_type'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">'emm_'</span>, <span class="va">emm</span><span class="op">$</span><span class="va">Time</span><span class="op">)</span>,
+      <span class="st">'Data'</span> <span class="op">=</span> <span class="va">score</span>,
+      <span class="st">'Estimate'</span> <span class="op">=</span> <span class="va">emm</span><span class="op">$</span><span class="va">estimate</span>,
+      <span class="st">'Gen_param'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">sim.out</span><span class="op">$</span><span class="va">Beta</span><span class="op">[</span><span class="fl">5</span><span class="op">:</span><span class="fl">8</span>,<span class="op">]</span><span class="op">)</span><span class="op">)</span>
+
+    <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind.data.frame</a></span><span class="op">(</span><span class="va">out</span>, <span class="va">tmp</span><span class="op">)</span>
+
+
+  <span class="op">}</span><span class="co"># score loop</span>
+
+  <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">'Replication: '</span>, <span class="va">repl</span>, <span class="st">'\n'</span><span class="op">)</span><span class="op">)</span>
+
+<span class="op">}</span><span class="co"># end replications</span>
+
+<span class="co"># Runtime:</span>
 <span class="va">et</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span>
 <span class="va">et</span> <span class="op">-</span> <span class="va">st</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod.clmm</span><span class="op">)</span>
-<span class="va">mod.clm</span><span class="op">$</span><span class="va">coefficients</span>
-<span class="va">mod.clmm</span><span class="op">$</span><span class="va">coefficients</span>
 
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/lme4/lme4/">lme4</a></span><span class="op">)</span>
-<span class="va">mod.glmm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/glmer.html">glmer</a></span><span class="op">(</span><span class="va">Y_comp</span> <span class="op">~</span> <span class="va">Time</span> <span class="op">+</span> <span class="va">Group</span> <span class="op">+</span> <span class="va">Time</span><span class="op">*</span><span class="va">Group</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">USUBJID</span><span class="op">)</span>,
-                  family <span class="op">=</span> <span class="st">'binomial'</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod.glmm</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/lme4/man/fixef.html">fixef</a></span><span class="op">(</span><span class="va">mod.glmm</span><span class="op">)</span>
+<span class="co">#---------------------------------------------------------------</span>
+<span class="co"># Data Mgmt</span>
+<span class="va">out</span><span class="op">$</span><span class="va">Data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">Data</span> <span class="op">==</span> <span class="st">'Y_comp'</span>, <span class="st">'Complete'</span>,
+       <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">Data</span> <span class="op">==</span> <span class="st">'Y_mcar'</span>, <span class="st">'MCAR'</span>,
+              <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">Data</span> <span class="op">==</span> <span class="st">'Y_mar'</span>, <span class="st">'MAR'</span>,
+                    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">Data</span> <span class="op">==</span> <span class="st">'Y_mnar'</span>, <span class="st">'MNAR'</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">s2</span> <span class="op">&lt;-</span> <span class="fu">lme4</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lme4/man/VarCorr.html">VarCorr</a></span><span class="op">(</span><span class="va">mod.glmm</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">s2</span><span class="op">)</span>
-<span class="va">s2</span> <span class="op">&lt;-</span> <span class="fu">ordinal</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ordinal/man/VarCorr.html">VarCorr</a></span><span class="op">(</span><span class="va">mod.clmm</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">s2</span><span class="op">)</span></code></pre></div>
+<span class="va">out</span><span class="op">$</span><span class="va">Data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">Data</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Complete'</span>, <span class="st">'MCAR'</span>, <span class="st">'MAR'</span>, <span class="st">'MNAR'</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#-------------------------------------------------------------</span>
+<span class="co"># Output</span>
+<span class="va">tab.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">Estimate</span>,<span class="st">'Bias'</span> <span class="op">=</span> <span class="va">Estimate</span> <span class="op">-</span> <span class="va">Gen_param</span><span class="op">)</span> <span class="op">~</span> <span class="va">Data</span> <span class="op">+</span> <span class="va">Param_type</span>,
+  FUN <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>,
+  na.action <span class="op">=</span> <span class="va">na.pass</span>,
+  data <span class="op">=</span> <span class="va">out</span><span class="op">)</span>
+
+<span class="va">tab.out</span>
+<span class="va">tab.out</span><span class="op">[</span><span class="va">tab.out</span><span class="op">$</span><span class="va">Param_type</span> <span class="op">==</span> <span class="st">'emm_Time_4'</span>, <span class="op">]</span>
+<span class="va">tab.out</span><span class="op">[</span><span class="va">tab.out</span><span class="op">$</span><span class="va">Param_type</span> <span class="op">==</span> <span class="st">'GroupGroup_2:TimeTime_4'</span>, <span class="op">]</span>
+<span class="co"># g2g</span></code></pre></div>
+</div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 

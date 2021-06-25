@@ -81,10 +81,13 @@
       <a href="../articles/13_CLMM_probit.html">Longitudinal Ordinal Data (Probit)</a>
     </li>
     <li>
-      <a href="../articles/14_CLMM_logistic.html">Longitudinal Ordinal Data (Logistic)</a>
+      <a href="../articles/14_CLMM_logistic.html">Longitudinal Ordinal Data (Logistic, Marginal)</a>
     </li>
     <li>
       <a href="../articles/15_CLMM_conditional.html">Longitudinal Ordinal Data, Conditional Specification</a>
+    </li>
+    <li>
+      <a href="../articles/CLMM_dropout.html">Modeling Longitudinal Data</a>
     </li>
     <li>
       <a href="../articles/Vignette_1.html">Vignette_1</a>
@@ -136,18 +139,24 @@
 
     
     
-<div id="assignment-1-relationship-between-negative-binomial-and-poisson" class="section level2">
-<h2 class="hasAnchor">
-<a href="#assignment-1-relationship-between-negative-binomial-and-poisson" class="anchor"></a>Assignment 1: Relationship between Negative Binomial and Poisson</h2>
-<p>Illustrate how the Negative Binomial distribution 1. Changes shape as mu changes 2. Changes shape as theta changes 3. When does NB approach Poisson distribution? Please show multiple plots together to visualize the change</p>
-</div>
-<div id="assignment-2-simulation-study" class="section level2">
-<h2 class="hasAnchor">
-<a href="#assignment-2-simulation-study" class="anchor"></a>Assignment 2: Simulation STudy</h2>
-<p>Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> and <code><a href="https://rdrr.io/r/base/load.html">load()</a></code> functions. Use the R code provided below.</p>
-<div id="generate-cross-sectional-data" class="section level3">
+<div id="relationship-between-negative-binomial-and-poisson" class="section level3">
 <h3 class="hasAnchor">
-<a href="#generate-cross-sectional-data" class="anchor"></a>Generate cross sectional data</h3>
+<a href="#relationship-between-negative-binomial-and-poisson" class="anchor"></a>Relationship between Negative Binomial and Poisson</h3>
+<p>Illustrate how the Negative Binomial distribution</p>
+<ol style="list-style-type: decimal">
+<li>Changes shape as mu changes</li>
+<li>Changes shape as theta changes</li>
+<li>When does NB approach Poisson distribution? Please show multiple plots together to visualize the change</li>
+</ol>
+</div>
+<div id="simulation-study" class="section level3">
+<h3 class="hasAnchor">
+<a href="#simulation-study" class="anchor"></a>Simulation Study</h3>
+<p>Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> and <code><a href="https://rdrr.io/r/base/load.html">load()</a></code> functions. Use the R code provided below.</p>
+</div>
+<div id="generate-cross-sectional-data" class="section level2">
+<h2 class="hasAnchor">
+<a href="#generate-cross-sectional-data" class="anchor"></a>Generate cross sectional data</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SPR</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">MASS</a></span><span class="op">)</span>
@@ -220,11 +229,10 @@
 <span class="va">mod.nb</span> <span class="op">&lt;-</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/glm.nb.html">glm.nb</a></span><span class="op">(</span><span class="va">Y_nb</span> <span class="op">~</span> <span class="va">Group</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod.nb</span><span class="op">)</span></code></pre></div>
 </div>
-</div>
-<div id="plots" class="section level1">
-<h1 class="hasAnchor">
-<a href="#plots" class="anchor"></a>Plots</h1>
-<p>This R code starts to illustrate the relationship between the two distributions.</p>
+<div id="plots" class="section level2">
+<h2 class="hasAnchor">
+<a href="#plots" class="anchor"></a>Plots</h2>
+<p>This R code helps to illustrate the relationship between the two distributions.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SPR</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">MASS</a></span><span class="op">)</span>
@@ -313,14 +321,84 @@
 
 <span class="op">}</span></code></pre></div>
 </div>
-<div id="simulation-study-poisson-and-negative-binomial-models" class="section level1">
-<h1 class="hasAnchor">
-<a href="#simulation-study-poisson-and-negative-binomial-models" class="anchor"></a>Simulation Study: Poisson and Negative Binomial Models</h1>
-<div id="evaluate-type-i-error-and-power" class="section level2">
+<div id="custom-estimation-routine" class="section level2">
 <h2 class="hasAnchor">
-<a href="#evaluate-type-i-error-and-power" class="anchor"></a>Evaluate Type I error and Power</h2>
-<p>Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> and <code><a href="https://rdrr.io/r/base/load.html">load()</a></code> functions. Use the R code provided below.</p>
+<a href="#custom-estimation-routine" class="anchor"></a>Custom Estimation Routine</h2>
+<p>Custom estimation code helps to understand how the model is estimated.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Custom written estimation routine:</span>
+<span class="va">Neg_Binom_loglike</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vP</span>, <span class="va">dat</span>, <span class="va">Y</span><span class="op">)</span><span class="op">{</span>
+  
+  <span class="co"># the 'par' (parameters to estimate) are only passed as a vector</span>
+  <span class="co"># re-create what you need from that vector</span>
+  <span class="va">Beta</span> <span class="op">&lt;-</span> <span class="va">vP</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'b0'</span>, <span class="st">'b1'</span><span class="op">)</span><span class="op">]</span>
+  <span class="va">Beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">Beta</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+  <span class="va">size</span> <span class="op">&lt;-</span> <span class="va">vP</span><span class="op">[</span><span class="st">'theta'</span><span class="op">]</span>
+
+  <span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">Group</span> , data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span> 
+  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">[</span> , <span class="va">Y</span><span class="op">]</span>
+  <span class="co"># Parameters:</span>
+  <span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">X</span> <span class="op">%*%</span> <span class="va">Beta</span><span class="op">)</span>
+  <span class="va">prob</span> <span class="op">&lt;-</span> <span class="va">size</span><span class="op">/</span><span class="op">(</span><span class="va">size</span> <span class="op">+</span> <span class="va">mu</span><span class="op">)</span>
+  
+  <span class="va">loglike</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html">lgamma</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">+</span> <span class="va">size</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html">lgamma</a></span><span class="op">(</span><span class="va">size</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html">lgamma</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="va">size</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">prob</span><span class="op">)</span>
+  <span class="va">loglike</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">loglike</span>
+  <span class="va">loglike</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">loglike</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">loglike</span><span class="op">)</span>
+  
+<span class="op">}</span>
+
+
+<span class="co"># optimize</span>
+<span class="va">Beta</span>; <span class="va">theta</span> <span class="co"># Gen param</span>
+<span class="va">vP</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'b0'</span> <span class="op">=</span> <span class="fl">0.2</span>, <span class="st">'b1'</span> <span class="op">=</span> <span class="fl">1</span>, <span class="st">'theta'</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/optim.html">optim</a></span><span class="op">(</span>par <span class="op">=</span> <span class="va">vP</span>, fn <span class="op">=</span> <span class="va">Neg_Binom_loglike</span>, method <span class="op">=</span> <span class="st">'BFGS'</span>, 
+             dat <span class="op">=</span> <span class="va">dat</span>, Y <span class="op">=</span> <span class="st">'Y_nb'</span><span class="op">)</span>
+<span class="co"># Compare Generating Parameter to R package estimate and the custom code estimate</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="st">'Gen Param'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">Beta</span><span class="op">)</span>, <span class="va">theta</span><span class="op">)</span>, <span class="st">'Custom'</span> <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">par</span>, <span class="st">'R package'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod.nb</span><span class="op">)</span>, <span class="va">mod.nb</span><span class="op">$</span><span class="va">theta</span><span class="op">)</span><span class="op">)</span>
+
+
+<span class="co"># Custom written estimation routine:</span>
+<span class="va">Poisson_loglike</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vP</span>, <span class="va">dat</span>, <span class="va">Y</span><span class="op">)</span><span class="op">{</span>
+  
+  <span class="co"># the 'par' (parameters to estimate) are only passed as a vector</span>
+  <span class="co"># re-create what you need from that vector</span>
+  <span class="va">Beta</span> <span class="op">&lt;-</span> <span class="va">vP</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'b0'</span>, <span class="st">'b1'</span><span class="op">)</span><span class="op">]</span>
+  <span class="va">Beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">Beta</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+
+  <span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html">model.matrix</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">Group</span> , data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span> 
+  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="va">dat</span><span class="op">[</span> , <span class="va">Y</span><span class="op">]</span>
+  <span class="co"># Parameters:</span>
+  <span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">X</span> <span class="op">%*%</span> <span class="va">Beta</span><span class="op">)</span>
+
+  <span class="va">loglike</span> <span class="op">&lt;-</span>  <span class="va">Y</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">mu</span><span class="op">)</span> <span class="op">-</span> <span class="va">mu</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html">lgamma</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+  <span class="va">loglike</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="va">loglike</span>
+  <span class="va">loglike</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">loglike</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">loglike</span><span class="op">)</span>
+  
+<span class="op">}</span>
+
+
+<span class="co"># optimize</span>
+<span class="va">vP</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'b0'</span> <span class="op">=</span> <span class="fl">0</span>, <span class="st">'b1'</span> <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>
+  <span class="va">start</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/optim.html">optim</a></span><span class="op">(</span>par <span class="op">=</span> <span class="va">vP</span>, fn <span class="op">=</span> <span class="va">Poisson_loglike</span>, method <span class="op">=</span> <span class="st">'BFGS'</span>, 
+             dat <span class="op">=</span> <span class="va">dat</span>, Y <span class="op">=</span> <span class="st">'Y_pois'</span><span class="op">)</span>
+  <span class="va">end</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span>
+
+  <span class="va">end</span> <span class="op">-</span> <span class="va">start</span>
+<span class="co"># Compare Generating Parameter to R package estimate and the custom code estimate</span>
+<span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="st">'**Gen Param**'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">Beta</span><span class="op">)</span><span class="op">)</span>, <span class="st">'**Custom**'</span> <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">par</span>, <span class="st">'**R package**'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod.pois</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="simulation-study-poisson-and-negative-binomial-models" class="section level2">
+<h2 class="hasAnchor">
+<a href="#simulation-study-poisson-and-negative-binomial-models" class="anchor"></a>Simulation Study: Poisson and Negative Binomial Models</h2>
+<div id="evaluate-type-i-error-and-power" class="section level3">
+<h3 class="hasAnchor">
+<a href="#evaluate-type-i-error-and-power" class="anchor"></a>Evaluate Type I error and Power</h3>
+<p>Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the <code><a href="https://rdrr.io/r/base/save.html">save()</a></code> and <code><a href="https://rdrr.io/r/base/load.html">load()</a></code> functions. Use the R code provided below.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">MASS</a></span><span class="op">)</span>
 
 <span class="va">N</span> <span class="op">=</span> <span class="fl">50</span> <span class="co">#this should be divisible by however many groups you use!</span>

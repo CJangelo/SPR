@@ -81,10 +81,13 @@
       <a href="../articles/13_CLMM_probit.html">Longitudinal Ordinal Data (Probit)</a>
     </li>
     <li>
-      <a href="../articles/14_CLMM_logistic.html">Longitudinal Ordinal Data (Logistic)</a>
+      <a href="../articles/14_CLMM_logistic.html">Longitudinal Ordinal Data (Logistic, Marginal)</a>
     </li>
     <li>
       <a href="../articles/15_CLMM_conditional.html">Longitudinal Ordinal Data, Conditional Specification</a>
+    </li>
+    <li>
+      <a href="../articles/CLMM_dropout.html">Modeling Longitudinal Data</a>
     </li>
     <li>
       <a href="../articles/Vignette_1.html">Vignette_1</a>
@@ -136,6 +139,9 @@
 
     
     
+<div id="generate-data-visualize-data-fit-models" class="section level2">
+<h2 class="hasAnchor">
+<a href="#generate-data-visualize-data-fit-models" class="anchor"></a>Generate Data, Visualize Data, Fit Models</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">N</span> <span class="op">=</span> <span class="fl">5000</span> <span class="co">#this should be divisible by however many groups you use!</span>
@@ -227,6 +233,7 @@
 <span class="va">G2</span><span class="op">/</span><span class="va">G1</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">mod.clm</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span>
 <span class="co">#</span></code></pre></div>
+</div>
 <div id="custom-estimation-r-code" class="section level2">
 <h2 class="hasAnchor">
 <a href="#custom-estimation-r-code" class="anchor"></a>Custom Estimation R code</h2>
