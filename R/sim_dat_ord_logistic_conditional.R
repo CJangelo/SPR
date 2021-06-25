@@ -137,7 +137,8 @@ dat$Y_comp <- as.vector(apply(runif(n = N*number.timepoints) > p, 1, sum))
   out <- list('dat' = dat,
               'reg.formula' = reg.formula,
               'Beta' = Beta,
-              'thresholds' = thresholds
+              'thresholds' = thresholds,
+              'subject.var' = subject.var
   )
 
   return(out)
