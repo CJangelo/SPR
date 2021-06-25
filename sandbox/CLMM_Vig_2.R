@@ -14,16 +14,16 @@ gc()
 
 library(MASS)
 library(polycor)
-
+library(SPR)
 ###
 #source("C:/Users/ciaconangelo/Documents/RESEARCH_NEW_LAPTOP/R_CODE_Long_Mixed_Models/sim_dat.R")
-source("C:/Users/ciaconangelo/OneDrive - OPEN Health/Documents/SPR/sandbox/sim_dat_ord_logistic.R")
+#source("C:/Users/ciaconangelo/OneDrive - OPEN Health/Documents/SPR/sandbox/sim_dat_ord_logistic.R")
 #source("C:/Users/ciaconangelo/Documents/RESEARCH_NEW_LAPTOP/R_CODE_Long_Mixed_Models/dropout.R")
 #source("C:/Users/ciaconangelo/Documents/RESEARCH_NEW_LAPTOP/R_CODE_Long_Mixed_Models/VarCov_gls.R")
 
  set.seed(6162021)
 
-  out <- sim_dat_ord_logistic(N = 500,
+  sim.out <- SPR::sim_dat_ord_logistic(N = 500,
                  number.groups = 2 ,
                  number.timepoints = 4,
                  reg.formula = formula( ~ Time + Group + Time*Group),
@@ -33,7 +33,7 @@ source("C:/Users/ciaconangelo/OneDrive - OPEN Health/Documents/SPR/sandbox/sim_d
                  cor.value = 0.4)
 
 
-  dat <- out$dat
+  dat <- sim.out$dat
   str(dat)
 
 # Check the correlations:
