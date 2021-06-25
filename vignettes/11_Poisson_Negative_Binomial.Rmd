@@ -15,21 +15,22 @@ knitr::opts_chunk$set(
 ```
 
 
-## Assignment 1: Relationship between Negative Binomial and Poisson
+### Relationship between Negative Binomial and Poisson
 
 Illustrate how the Negative Binomial distribution
+
 1. Changes shape as mu changes
 2. Changes shape as theta changes
 3. When does NB approach Poisson distribution?
 Please show multiple plots together to visualize the change
 
 
-## Assignment 2: Simulation STudy 
+### Simulation Study 
 Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the `save()` and `load()` functions. Use the R code provided below.
 
 
 
-### Generate cross sectional data
+## Generate cross sectional data
 
 ```{r Run1, eval = F}
 library(SPR)
@@ -105,9 +106,9 @@ summary(mod.nb)
 
 ```
 
-# Plots
+## Plots
 
-This R code starts to illustrate the relationship between the two distributions.
+This R code helps to illustrate the relationship between the two distributions.
 
 
 ```{r Run2, eval = F}
@@ -201,9 +202,83 @@ for (theta in c(1000, 100, 10, 1, 0.1)) {
 
 ```
 
+## Custom Estimation Routine
 
-# Simulation Study: Poisson and Negative Binomial Models
-## Evaluate Type I error and Power
+Custom estimation code helps to understand how the model is estimated. 
+
+```{r custom1, eval = F}
+# Custom written estimation routine:
+Neg_Binom_loglike <- function(vP, dat, Y){
+  
+  # the 'par' (parameters to estimate) are only passed as a vector
+  # re-create what you need from that vector
+  Beta <- vP[c('b0', 'b1')]
+  Beta <- matrix(Beta, ncol = 1)
+  size <- vP['theta']
+
+  X <- model.matrix( ~ Group , data = dat) 
+  Y <- dat[ , Y]
+  # Parameters:
+  mu <- exp(X %*% Beta)
+  prob <- size/(size + mu)
+  
+  loglike <- lgamma(Y + size) - lgamma(size) - lgamma(Y + 1) + size*log(prob) + (Y)*log(1-prob)
+  loglike <- -1*loglike
+  loglike <- sum(loglike)
+  return(loglike)
+  
+}
+
+
+# optimize
+Beta; theta # Gen param
+vP <- c('b0' = 0.2, 'b1' = 1, 'theta' = 1)
+out <- optim(par = vP, fn = Neg_Binom_loglike, method = 'BFGS', 
+             dat = dat, Y = 'Y_nb')
+# Compare Generating Parameter to R package estimate and the custom code estimate
+
+cbind('Gen Param' = c(as.vector(Beta), theta), 'Custom' = out$par, 'R package' = c(coef(mod.nb), mod.nb$theta))
+
+
+# Custom written estimation routine:
+Poisson_loglike <- function(vP, dat, Y){
+  
+  # the 'par' (parameters to estimate) are only passed as a vector
+  # re-create what you need from that vector
+  Beta <- vP[c('b0', 'b1')]
+  Beta <- matrix(Beta, ncol = 1)
+
+  X <- model.matrix( ~ Group , data = dat) 
+  Y <- dat[ , Y]
+  # Parameters:
+  mu <- exp(X %*% Beta)
+
+  loglike <-  Y * log(mu) - mu - lgamma(Y + 1)
+  loglike <- -1*loglike
+  loglike <- sum(loglike)
+  return(loglike)
+  
+}
+
+
+# optimize
+vP <- c('b0' = 0, 'b1' = 0.5)
+  start <- Sys.time()
+out <- optim(par = vP, fn = Poisson_loglike, method = 'BFGS', 
+             dat = dat, Y = 'Y_pois')
+  end <- Sys.time()
+
+  end - start
+# Compare Generating Parameter to R package estimate and the custom code estimate
+cbind('**Gen Param**' = c(as.vector(Beta)), '**Custom**' = out$par, '**R package**' = c(coef(mod.pois)))
+
+
+
+```
+
+
+## Simulation Study: Poisson and Negative Binomial Models
+### Evaluate Type I error and Power
 
 Conduct a simulation study with a unique set of conditions and compute the Type I error and Power. Remember to use the `save()` and `load()` functions. Use the R code provided below.
 

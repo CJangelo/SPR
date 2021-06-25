@@ -8,7 +8,15 @@ vignette: >
 ---
 
 
+## Data Generation
+
+1. Generate longitudinal binomial data
+2. Marginal model - ordinal GEE should work. 
+
+
+## Simulation Study 
 First step is to recover estimates with full data
+
 1. use GEE
 2. use GLMM and then convert back to population average estimate
 3. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650580/#R11

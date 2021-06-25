@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-
+## Generate Data, Visualize Data, Fit Models
 
 ```{r logit1, eval = F}
 
