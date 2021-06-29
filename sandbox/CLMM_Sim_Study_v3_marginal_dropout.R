@@ -8,6 +8,7 @@ gc()
 library(SPR)
 library(ordinal)
 library(multgee)
+library(polycor)
 
 # Initialize output:
 score.names <- c('Y_comp', 'Y_mcar', 'Y_mar', 'Y_mnar')
@@ -25,7 +26,7 @@ number.repl <- 100
   st <- Sys.time()
 for (repl in 1:number.repl) {
 
-  set.seed(6252021 + repl)
+  set.seed(6292021 + repl)
 
   sim.out <- SPR::sim_dat_ord_logistic(
     N = 300,
@@ -35,27 +36,29 @@ for (repl in 1:number.repl) {
     Beta = 1,
     thresholds = c(-1, 0, 1),
     corr = 'ar1',
-    cor.value = 0.4)
+    cor.value = 0.8)
 
 
   dat <- sim.out$dat
 
   dat <- SPR::dropout(dat = dat,
                       type_dropout  = c('mcar', 'mar', 'mnar'),
-                      prop.miss = 0.3)
+                      prop.miss = 0.6)
 
 # # Check your data:
-#   aggregate(Y_mar ~ Time, FUN = function(x) sum(!is.na(x)),
+#   aggregate(Y_mnar ~ Time, FUN = function(x) sum(!is.na(x)),
 #             na.action = na.pass, data = dat)
 #
-#   # Quick barplot, base R plot functions
-# barplot(100*table(dat$Y_mar)/sum(table(dat$Y_mar)),
-#         ylim = c(0, 100), ylab = 'Percentage',
-#         col = 'grey', main = 'Ordinal')
-# Check the correlations:
-# polychor(x = dat$Y_comp[dat$Time == 'Time_1'], y = dat$Y_comp[dat$Time == 'Time_2'])
-# polychor(x = dat$Y_comp[dat$Time == 'Time_2'], y = dat$Y_comp[dat$Time == 'Time_3'])
-# polychor(x = dat$Y_comp[dat$Time == 'Time_3'], y = dat$Y_comp[dat$Time == 'Time_4'])
+#   aggregate(cbind(Y_comp, Y_mar, Y_mnar) ~ Time + Group, FUN = function(x) mean(x, na.rm = T),
+#             na.action = na.pass, data = dat)
+#
+# # Check the correlations:
+# tmp <- tidyr::pivot_wider(data = dat,
+#                    id_cols = c('USUBJID'),
+#                    names_from = c('Time'),
+#                    values_from = c('Y_comp'))
+# polycor::hetcor(tmp[, -1])$correlations
+
 
 
   for (score in score.names) {
@@ -74,6 +77,7 @@ for (repl in 1:number.repl) {
                      data = dat.gee,
                      id = id.geepack,
                      repeated = Time, LORstr = "uniform")
+
 
   # Output:
     tmp <- data.frame(
@@ -95,6 +99,9 @@ for (repl in 1:number.repl) {
       'Gen_param' = c(sim.out$thresholds, as.vector(sim.out$Beta)[-1]))
 
     out <- rbind.data.frame(out, tmp)
+
+    # Test:
+    mod.clm <- mod.gee <- NA
 
       # Conditional Model fit to Marginal Data is SLOW!
     # skip for now
@@ -134,3 +141,6 @@ tab.out <- aggregate(
 tab.out
 tab.out[tab.out$Param_type == 'GroupGroup_2:TimeTime_4', ]
 # ???
+
+sum(coef(mod.gee)[c('GroupGroup_2', 'GroupGroup_2:TimeTime_4')])
+    sum(coef(mod.clm)[c('GroupGroup_2', 'GroupGroup_2:TimeTime_4')])

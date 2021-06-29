@@ -1,0 +1,131 @@
+---
+title: "Vignette_11"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette_11}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+# Longitudinal Binomial Data
+
+Longitudinal binomial/ordinal data is more complicated than longitudinal continuous data. 
+
+Continuous data: marginal and conditional model estimates **are** equivalent
+
+Binomial/Ordinal data: marginal and conditional model estimates **are NOT** equivalent
+
+Review and run the code below to better understand the data distribution. 
+
+### TODO: 
+1. Add sources to direct reader.  
+2. MAR drop-out, weights to adjust for bias in estimates
+3. Fit conditional models for comparison
+
+
+
+
+### Generate Data with MCAR Drop-out
+
+
+```{r Run1, eval = F}
+library(SPR)
+library(MASS)
+ set.seed(321)
+  
+  out <- sim_dat_binom(N = 100, 
+                 number.groups = 2 , 
+                 number.timepoints = 4, 
+                 reg.formula = formula( ~ Time + Group + Time*Group),
+                 Beta = 1,
+                 corr = 'ar1', 
+                 cor.value = 0.4) 
+
+  
+  dat <- out$dat
+  str(dat)
+ 
+  
+  dat <- dropout(dat = dat, 
+                 type_dropout  = c('mcar'), 
+                 prop.miss = 0.3)
+  
+# Binomial
+aggregate(Y_comp ~ Group + Time, FUN = function(x) mean(x, na.rm = T), dat = dat, na.action = na.pass)
+mod.glm1 <- glm(as.factor(Y_comp) ~ Time + Group + Time*Group, family = 'binomial', data = dat)
+  matrix(coef(mod.glm1), ncol = 1, dimnames = list(names(coef(mod.glm1))))
+mod.glm2 <- glm(Y_mcar ~ Time + Group + Time*Group, family = 'binomial', data = dat)
+  matrix(coef(mod.glm2), ncol = 1, dimnames = list(names(coef(mod.glm1))))
+out$Beta
+```
+
+
+## Fit Generalized Estimating Equations
+
+```{r Run2, eval = F}
+
+library(geepack)
+###
+mod.gee1 <- geepack::geeglm(Y_comp ~ Time + Group + Time*Group, id = id.geepack, data = dat, family = binomial, corstr = "ar1")
+summary(mod.gee1)
+matrix(coef(mod.gee1), ncol = 1, dimnames = list(names(coef(mod.gee1))))
+matrix(coef(mod.glm1), ncol = 1, dimnames = list(names(coef(mod.glm1))))
+
+# This will hang R
+mod.gee2 <- geepack::geeglm(Y_mcar ~ Time + Group + Time*Group, id = USUBJID, data = dat, family = binomial, corstr = "ar1")
+summary(mod.gee2)
+# # As soon as there's missing data, these don't line up - pretty close though
+matrix(coef(mod.gee2), ncol = 1, dimnames = list(names(coef(mod.gee2))))
+matrix(coef(mod.glm2), ncol = 1, dimnames = list(names(coef(mod.glm1))))
+
+ 
+```
+
+## Generate Binomial Data with Conditional MCAR Drop-out
+
+Compare the correctly specified model and the misspecified model. 
+
+```{r Run3, eval = F}
+
+  out <- sim_dat_binom(N = 10000, 
+                 number.groups = 2 , 
+                 number.timepoints = 4, 
+                 cond.mcar = T,
+                 #reg.formula = formula( ~ Time + Group + Time*Group),
+                 Beta = 1,
+                 corr = 'ar1', 
+                 cor.value = 0.4) 
+
+  
+ dat <- out$dat
+  str(dat)
+  
+  dat <- dropout(dat = dat, 
+                 type_dropout  = c('mcar'), 
+                 prop.miss = 0.3)
+  
+  out$reg.formula
+# Binomial
+mod.glm1 <- glm(as.factor(Y_comp) ~ Group + Time + Covariate + Time * Group + Covariate * Time, family = 'binomial', data = dat)
+  matrix(coef(mod.glm1), ncol = 1, dimnames = list(names(coef(mod.glm1))))
+mod.glm2 <- glm(Y_mcar ~ Group + Time + Covariate + Time * Group + Covariate * Time, family = 'binomial', data = dat)
+  matrix(coef(mod.glm2), ncol = 1, dimnames = list(names(coef(mod.glm2))))
+  out$Beta
+
+# Misspecified Model:
+mod.glm3 <- glm(Y_comp ~ Group + Time + Time * Group, family = 'binomial', data = dat)
+  matrix(coef(mod.glm3), ncol = 1, dimnames = list(names(coef(mod.glm3))))
+  out$Beta
+# Way off, as expected
+  
+```
+
+
