@@ -72,7 +72,13 @@
       <a href="articles/05_Multinomial.html">Multinomial Distribution</a>
     </li>
     <li>
-      <a href="articles/06_Poisson_Negative_Binomial.html">Poisson and Negative Binomial Distributions</a>
+      <a href="articles/06_0_Poisson_Negative_Binomial.html">Poisson and Negative Binomial Distributions</a>
+    </li>
+    <li>
+      <a href="articles/06_1_ZIP.html">Zero Inflated Poisson - ZIP</a>
+    </li>
+    <li>
+      <a href="articles/06_2_ZINB.html">Zero Inflated Negative Binomial - ZINB</a>
     </li>
     <li>
       <a href="articles/07_Beta.html">Beta Distribution</a>
@@ -104,6 +110,9 @@
     <li>
       <a href="articles/16_CLMM_conditional.html">Longitudinal Ordinal Data, Conditional Specification</a>
     </li>
+    <li>
+      <a href="articles/Long_Data_All_Types.html">Longitudinal Data, All Data Types, Conditional Specification</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -125,6 +134,16 @@
 <!-- badges: start -->
 <!-- badges: end -->
 <p>SPR, an R package to simulate clinical data as part of training in R statistical programming.</p>
+<div id="installation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h2>
+<p>You can install the released version of SPR from github:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/">devtools</a></span><span class="op">)</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"CJangelo/SPR"</span><span class="op">)</span></code></pre></div>
+<p>Note that this R package is not intended for CRAN. It is for training purposes.</p>
+</div>
 <div id="description" class="section level2">
 <h2 class="hasAnchor">
 <a href="#description" class="anchor"></a>Description</h2>
@@ -142,15 +161,16 @@
 </div>
 <div id="vignettes-different-data-distributions-cross-sectional-data" class="section level3">
 <h3 class="hasAnchor">
-<a href="#vignettes-different-data-distributions-cross-sectional-data" class="anchor"></a>Vignettes: Different Data Distributions (Cross Sectional Data)</h3>
+<a href="#vignettes-different-data-distributions-cross-sectional-data" class="anchor"></a>Vignettes: Different Data Distributions, Cross Sectional Data</h3>
 <ul>
-<li>Vignette 1. Continuous data (Normal error distribution)</li>
-<li>Vignette 2. Binomial data</li>
-<li>Vignette 3. Ordinal data (probit)</li>
-<li>Vignette 4. Ordinal data (logit)</li>
-<li>Vignette 5. Multinomial data</li>
-<li>Vignette 6. Poisson and Negative Binomial data</li>
-<li>Vignette 7. Beta Distribution</li>
+<li>Continuous data (Normal error distribution)</li>
+<li>Binomial data</li>
+<li>Ordinal data (probit)</li>
+<li>Ordinal data (logit)</li>
+<li>Multinomial data</li>
+<li>Poisson and Negative Binomial data</li>
+<li>Beta Distribution</li>
+<li>Zero-inflated Poisson and Negative Binomial data</li>
 </ul>
 </div>
 <div id="longitudinal-data" class="section level3">
@@ -184,34 +204,76 @@
 <h4 class="hasAnchor">
 <a href="#continuous-data" class="anchor"></a>Continuous Data</h4>
 <ul>
-<li>Vignette 8. Fit a MMRM in R</li>
-<li>Vignette 9. Simulation study to evaluate MMRM performance, includes FWE evaluation, FDR correction</li>
-<li>Vignette 10. How to Handle Missing Data?</li>
-<li>Vignette 11. Continuation of missing data handling: What is the relationship between MCAR/MAR/MNAR?</li>
-<li>Vignette 12. Continuation of Missing Data Handling: What is the relationship between MCAR/MAR/Conditional MCAR?</li>
-<li>Vignette 13. MMRM and Mixed Effects Model, Simulation Study - what is the relationship between marginal and conditional models with continuous data?</li>
+<li>Fit a MMRM in R</li>
+<li>Simulation study to evaluate MMRM performance, includes FWE evaluation, FDR correction</li>
+<li>How to Handle Missing Data?</li>
+<li>Continuation of missing data handling: What is the relationship between MCAR/MAR/MNAR?</li>
+<li>Continuation of Missing Data Handling: What is the relationship between MCAR/MAR/Conditional MCAR?</li>
+<li>MMRM and Mixed Effects Model, Simulation Study - what is the relationship between marginal and conditional models with continuous data?</li>
 </ul>
 </div>
 <div id="categorical-data-binomial-ordinal" class="section level4">
 <h4 class="hasAnchor">
 <a href="#categorical-data-binomial-ordinal" class="anchor"></a>Categorical Data (Binomial, Ordinal)</h4>
 <ul>
-<li>Vignette 14. Longitudinal Binomial Data with the Generalized Linear Mixed Model: Simulation Study</li>
-<li>Vignette 15. Longitudinal Ordinal Data, Marginal Specification (Logistic and Probit)</li>
-<li>Vignette 16. Longitudinal Ordinal Data, Conditional Specification</li>
+<li>Longitudinal Binomial Data with the Generalized Linear Mixed Model: Simulation Study</li>
+<li>Longitudinal Ordinal Data, Marginal Specification</li>
+<li>Longitudinal Ordinal Data, Conditional Specification</li>
+</ul>
+</div>
+<div id="all-data-types" class="section level4">
+<h4 class="hasAnchor">
+<a href="#all-data-types" class="anchor"></a>All Data Types</h4>
+<ul>
+<li>Longitudinal Data, All Data Types, Conditional Specification</li>
 </ul>
 </div>
 </div>
 </div>
-<div id="installation" class="section level2">
+<div id="statistics-resources--references" class="section level2">
 <h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>You can install the released version of SPR from github:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/">devtools</a></span><span class="op">)</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"CJangelo/SPR"</span><span class="op">)</span></code></pre></div>
-<p>Note that this R package is not intended for CRAN. It is for training purposes.</p>
+<a href="#statistics-resources--references" class="anchor"></a>Statistics Resources &amp; References</h2>
+<ul>
+<li>We all need reminders for ourselves, and references to point clients to</li>
+<li>Common statistical tests are linear models (or: how to do basic stats)
+<ul>
+<li><a href="https://lindeloev.github.io/tests-as-linear/" class="uri">https://lindeloev.github.io/tests-as-linear/</a></li>
+</ul>
+</li>
+<li>Missing Data in clinical trials (and analysis in RCT more broadly)
+<ul>
+<li><a href="https://www.ncbi.nlm.nih.gov/books/NBK209904/" class="uri">https://www.ncbi.nlm.nih.gov/books/NBK209904/</a></li>
+</ul>
+</li>
+<li>Code Guidelines
+<ul>
+<li><a href="https://style.tidyverse.org/" class="uri">https://style.tidyverse.org/</a></li>
+</ul>
+</li>
+<li>Jargon
+<ul>
+<li>NRC stat report had a section on jargon: <a href="https://www.ncbi.nlm.nih.gov/books/NBK209903/" class="uri">https://www.ncbi.nlm.nih.gov/books/NBK209903/</a>
+</li>
+<li>Searchable resource from FDA Working Group: <a href="https://www.ncbi.nlm.nih.gov/books/NBK338448/#IX-B" class="uri">https://www.ncbi.nlm.nih.gov/books/NBK338448/#IX-B</a>
+</li>
+</ul>
+</li>
+<li>Bug report
+<ul>
+<li>How do we report issues/problems to developers/stackoverflow community/colleagues?
+<ul>
+<li><a href="https://github.com/rstudio/rstudio/wiki/Writing-Good-Bug-Reports" class="uri">https://github.com/rstudio/rstudio/wiki/Writing-Good-Bug-Reports</a></li>
+<li>Summary: send fully reproducible code and output from “sessionInfo()”</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Statistical Misconceptions
+<ul>
+<li><a href="https://discourse.datamethods.org/t/reference-collection-to-push-back-against-common-statistical-myths/1787" class="uri">https://discourse.datamethods.org/t/reference-collection-to-push-back-against-common-statistical-myths/1787</a></li>
+</ul>
+</li>
+</ul>
 </div>
 <div id="license" class="section level2">
 <h2 class="hasAnchor">
