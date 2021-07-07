@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Simulate Longitudinal Binomial Data — sim_dat_binom • SPR</title>
+<title>Simulate Conditional Longitudinal Data
+This is a conditional model with a random intercept — sim_dat_types • SPR</title>
 
 
 <!-- jquery -->
@@ -39,10 +40,11 @@
 
 
 
-<meta property="og:title" content="Simulate Longitudinal Binomial Data — sim_dat_binom" />
-<meta property="og:description" content="TODO: Build in check if the correlations are too high! Where is that code?
-Note that the variances aren't used if passed,
-Requires MASS R package" />
+<meta property="og:title" content="Simulate Conditional Longitudinal Data
+This is a conditional model with a random intercept — sim_dat_types" />
+<meta property="og:description" content="Select the data type you want to generate - this is best suited for
+fitting data in glmmTMB() among other R packages that are based on
+the conditional model with a random intercept" />
 
 
 
@@ -174,32 +176,44 @@ Requires MASS R package" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Simulate Longitudinal Binomial Data</h1>
+    <h1>Simulate Conditional Longitudinal Data
+This is a conditional model with a random intercept</h1>
     
-    <div class="hidden name"><code>sim_dat_binom.Rd</code></div>
+    <div class="hidden name"><code>sim_dat_types.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>TODO: Build in check if the correlations are too high! Where is that code?
-Note that the variances aren't used if passed,
-Requires MASS R package</p>
+    <p>Select the data type you want to generate - this is best suited for
+fitting data in <code>glmmTMB()</code> among other R packages that are based on
+the conditional model with a random intercept</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sim_dat_binom</span><span class='op'>(</span>
-  N <span class='op'>=</span> <span class='fl'>100</span>,
+    <pre class="usage"><span class='fu'>sim_dat_types</span><span class='op'>(</span>
+  N <span class='op'>=</span> <span class='fl'>1000</span>,
+  data.type <span class='op'>=</span> <span class='cn'>NULL</span>,
   number.groups <span class='op'>=</span> <span class='fl'>2</span>,
   number.timepoints <span class='op'>=</span> <span class='fl'>4</span>,
   reg.formula <span class='op'>=</span> <span class='cn'>NULL</span>,
-  Beta <span class='op'>=</span> <span class='fl'>0</span>,
-  corr <span class='op'>=</span> <span class='st'>"ar1"</span>,
-  cor.value <span class='op'>=</span> <span class='cn'>NULL</span>,
-  cond.mcar <span class='op'>=</span> <span class='cn'>F</span>,
-  Covariate <span class='op'>=</span> <span class='cn'>F</span>
+  Beta <span class='op'>=</span> <span class='cn'>NULL</span>,
+  sigma2 <span class='op'>=</span> <span class='cn'>NULL</span>,
+  shape2 <span class='op'>=</span> <span class='cn'>NULL</span>,
+  phi <span class='op'>=</span> <span class='cn'>NULL</span>,
+  theta <span class='op'>=</span> <span class='cn'>NULL</span>,
+  zip <span class='op'>=</span> <span class='cn'>NULL</span>,
+  thresholds <span class='op'>=</span> <span class='cn'>NULL</span>,
+  k <span class='op'>=</span> <span class='cn'>NULL</span>,
+  subject.var <span class='op'>=</span> <span class='fl'>1</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>data.type</th>
+      <td><p>Specify the type of data you want to generate. Select
+one from the following: 'Ordinal', 'Beta', 'Gaussian', 'NegBinom',
+'ZIP', 'ZINB', 'Multinom'. This must be a character vector of length 1.</p></td>
+    </tr>
     <tr>
       <th>reg.formula</th>
       <td><p>this is a regression formula to pass to the data generation; null is
@@ -211,20 +225,37 @@ formula(~ Group + Time + Time*Group),</p></td>
 that will be the final value of the interaction parameters, default is all(Beta == 0) for Type I error simulations</p></td>
     </tr>
     <tr>
-      <th>corr</th>
-      <td><p>options for correlation structure  c('ind', 'ar1', 'cs'), default is 'ar1'</p></td>
+      <th>sigma2</th>
+      <td><p>the residual error in Gaussian data</p></td>
     </tr>
     <tr>
-      <th>cor.value</th>
-      <td><p>numeric, the first corr in ar1, the corr in cs option</p></td>
+      <th>shape2</th>
+      <td><p>parameter in Beta distribution</p></td>
     </tr>
     <tr>
-      <th>cond.mcar</th>
-      <td><p>logical; do you want a conditional MCAR data generation</p></td>
+      <th>phi</th>
+      <td><p>parameter in Beta distribution</p></td>
     </tr>
     <tr>
-      <th>Covariate</th>
-      <td><p>logical; do you want a random simulated covariate?</p></td>
+      <th>theta</th>
+      <td><p>size parameter in NB</p></td>
+    </tr>
+    <tr>
+      <th>zip</th>
+      <td><p>zero inflation parameter</p></td>
+    </tr>
+    <tr>
+      <th>thresholds</th>
+      <td><p>thresholds in ordinal data</p></td>
+    </tr>
+    <tr>
+      <th>k</th>
+      <td><p>number of categories in ordinal/nominal</p></td>
+    </tr>
+    <tr>
+      <th>subject.var</th>
+      <td><p>the subject-level variance, also known as the variance
+associated with the random intercept</p></td>
     </tr>
     </table>
 
