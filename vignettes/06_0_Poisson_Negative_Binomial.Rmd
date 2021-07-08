@@ -165,7 +165,6 @@ for (theta in c(1000, 100, 10, 1, 0.1)) {
             theme_minimal() + 
             theme(plot.title = element_text(hjust = 0.5), 
                   plot.subtitle = element_text(hjust = 0.5)) 
-            # Why the fuck would I want a left aligned title
 
   
   p2 <- ggplot2::ggplot(dat, aes(x = Y_pois)) + 
@@ -175,7 +174,6 @@ for (theta in c(1000, 100, 10, 1, 0.1)) {
             theme_minimal() + 
             theme(plot.title = element_text(hjust = 0.5), 
                   plot.subtitle = element_text(hjust = 0.5)) 
-            # Why the fuck would I want a left aligned title
 
   
   gridExtra::grid.arrange(p1, p2, ncol = 2)   
