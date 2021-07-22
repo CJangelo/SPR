@@ -139,6 +139,17 @@
 
     
     
+<div id="reference-for-negative-binomial-models" class="section level3">
+<h3 class="hasAnchor">
+<a href="#reference-for-negative-binomial-models" class="anchor"></a>Reference for Negative Binomial Models</h3>
+<p>Ben bolker, one of the main creators of the <code>glmmTMB</code> R package, wrote this: <a href="https://ms.mcmaster.ca/~bolker/emdbook/book.pdf" class="uri">https://ms.mcmaster.ca/~bolker/emdbook/book.pdf</a></p>
+<p>I also think you should own Advanced Statistics with Application in R by Demidenko</p>
+<p>Links:</p>
+<ul>
+<li><a href="https://www.eugened.org/" class="uri">https://www.eugened.org/</a></li>
+<li><a href="https://github.com/eugenedemidenko/advancedstatistics/" class="uri">https://github.com/eugenedemidenko/advancedstatistics/</a></li>
+</ul>
+</div>
 <div id="relationship-between-negative-binomial-and-poisson" class="section level3">
 <h3 class="hasAnchor">
 <a href="#relationship-between-negative-binomial-and-poisson" class="anchor"></a>Relationship between Negative Binomial and Poisson</h3>
@@ -227,7 +238,18 @@
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod.pois</span><span class="op">)</span>
 
 <span class="va">mod.nb</span> <span class="op">&lt;-</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/glm.nb.html">glm.nb</a></span><span class="op">(</span><span class="va">Y_nb</span> <span class="op">~</span> <span class="va">Group</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod.nb</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod.nb</span><span class="op">)</span>
+
+
+<span class="co"># Fit Models using glmmTMB R package:</span>
+
+<span class="co"># Poisson</span>
+<span class="va">mp</span> <span class="op">&lt;-</span> <span class="fu">glmmTMB</span><span class="op">(</span><span class="va">Y_pois</span> <span class="op">~</span> <span class="va">Group</span>, family<span class="op">=</span><span class="va">poisson</span>, data<span class="op">=</span><span class="va">dat</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mp</span><span class="op">)</span>
+
+<span class="co"># NB</span>
+<span class="va">mnp</span> <span class="op">&lt;-</span> <span class="fu">glmmTMB</span><span class="op">(</span><span class="va">Y_nb</span> <span class="op">~</span> <span class="va">Group</span>, family<span class="op">=</span><span class="va">nbinom2</span>, data<span class="op">=</span><span class="va">dat</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mnp</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="plots" class="section level2">
 <h2 class="hasAnchor">
