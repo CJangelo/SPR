@@ -14,6 +14,19 @@ knitr::opts_chunk$set(
 )
 ```
 
+### Reference for Negative Binomial Models
+
+Ben bolker, one of the main creators of the `glmmTMB` R package, wrote this:
+https://ms.mcmaster.ca/~bolker/emdbook/book.pdf
+
+I also think you should own Advanced Statistics with Application in R by 
+Demidenko
+
+Links:
+
+- https://www.eugened.org/
+- https://github.com/eugenedemidenko/advancedstatistics/
+
 
 ### Relationship between Negative Binomial and Poisson
 
@@ -103,6 +116,19 @@ summary(mod.pois)
 
 mod.nb <- MASS::glm.nb(Y_nb ~ Group, data = dat)
 summary(mod.nb)
+
+
+# Fit Models using glmmTMB R package:
+
+# Poisson
+mp <- glmmTMB(Y_pois ~ Group, family=poisson, data=dat)
+summary(mp)
+
+# NB
+mnp <- glmmTMB(Y_nb ~ Group, family=nbinom2, data=dat)
+summary(mnp)
+
+
 
 ```
 
