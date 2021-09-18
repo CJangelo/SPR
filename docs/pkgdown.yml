@@ -2,25 +2,27 @@ pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  00_Fundamentals: 00_Fundamentals.html
-  01_Continuous: 01_Continuous.html
-  02_Binomial: 02_Binomial.html
-  03_Ordinal-Probit: 03_Ordinal-Probit.html
-  04_Ordinal-Logistic: 04_Ordinal-Logistic.html
-  05_Multinomial: 05_Multinomial.html
-  06_0_Poisson_Negative_Binomial: 06_0_Poisson_Negative_Binomial.html
-  06_1_ZIP: 06_1_ZIP.html
-  06_2_ZINB: 06_2_ZINB.html
-  07_Beta: 07_Beta.html
-  08_Fit_MMRM_in_R: 08_Fit_MMRM_in_R.html
-  09_MMRM_Sim_Study: 09_MMRM_Sim_Study.html
-  10_Missing_Data: 10_Missing_Data.html
-  11_MCAR_MAR_MNAR: 11_MCAR_MAR_MNAR.html
-  12_MCAR_MAR_CMCAR: 12_MCAR_MAR_CMCAR.html
-  13_MMRM_vs_Mixed_Effects: 13_MMRM_vs_Mixed_Effects.html
-  14_GLMM: 14_GLMM.html
-  15_CLMM_logistic: 15_CLMM_logistic.html
-  16_CLMM_conditional: 16_CLMM_conditional.html
-  Long_Data_All_Types: Long_Data_All_Types.html
-last_built: 2021-07-07T21:19Z
+  a00_Fundamentals: a00_Fundamentals.html
+  a01_Continuous: a01_Continuous.html
+  a02_Binomial: a02_Binomial.html
+  a03_Ordinal_Probit: a03_Ordinal_Probit.html
+  a04_Ordinal_Logistic: a04_Ordinal_Logistic.html
+  a05_Multinomial: a05_Multinomial.html
+  a06_0_Poisson_Negative_Binomial: a06_0_Poisson_Negative_Binomial.html
+  a06_1_ZIP: a06_1_ZIP.html
+  a06_2_ZINB: a06_2_ZINB.html
+  a07_1_Relative_Risk: a07_1_Relative_Risk.html
+  a07_2_Relative_Risk_pt2: a07_2_Relative_Risk_pt2.html
+  a07_Beta: a07_Beta.html
+  a08_Fit_MMRM_in_R: a08_Fit_MMRM_in_R.html
+  a09_MMRM_Sim_Study: a09_MMRM_Sim_Study.html
+  a10_Missing_Data: a10_Missing_Data.html
+  a11_MCAR_MAR_MNAR: a11_MCAR_MAR_MNAR.html
+  a12_MCAR_MAR_CMCAR: a12_MCAR_MAR_CMCAR.html
+  a13_MMRM_vs_Mixed_Effects: a13_MMRM_vs_Mixed_Effects.html
+  a14_GLMM: a14_GLMM.html
+  a15_CLMM_logistic: a15_CLMM_logistic.html
+  a16_CLMM_conditional: a16_CLMM_conditional.html
+  a17_Long_Data_All_Types: a17_Long_Data_All_Types.html
+last_built: 2021-09-18T14:09Z
 
