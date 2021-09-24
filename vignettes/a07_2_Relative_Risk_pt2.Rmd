@@ -14,8 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-TO DO: Figure out what `epitools::probratio()` is doing such that it lines up exactly
-with the adjusted log-binomial model. Is it just running a log-binomial model?
 
 ## Overview
 Now we extend the OR to RR to include covariates. We can do this with categorical covariates
@@ -114,54 +112,13 @@ mod2 <- glm(Y_binom ~ Group + Z,
 mod.lr <- glm(Y_binom ~ Group + Z, data = dat,
               family = binomial(link ='logit'))
 
-# Now we have the odds ratio from the model, we can compute
-# the relative risk using the baseline prevalence.
-
-#
-# Can think of several ways of getting the baseline prevalance:
-#
-# 1. observed rate in control group:
-p0_v1 <- ptab['1', 'Group_1']
-
-# 2. Intercept from the logistic regression model:
-# Pulled this from Stata function: http://fmwww.bc.edu/repec/bocode/l/logittorisk.ado
-odds0 <- exp( coef(mod.lr)['(Intercept)'] )
-p0_v2 <- odds0/(1 + odds0)
-# but this assumes the covariates are at reference value
-
-# 3. Prediction aligns with intercept:
-p0_v3 <- predict(mod.lr, type = 'response',
-                 newdata = data.frame('Group' = 'Group_1',
-                                      'Z' = 0))
-
-p0_v2 
-p0_v3
-# So if you use this as your base rate, you are assuming that the other covariate
-# is set at the reference level (Z = 0). This may or may not be what you want to do.
-# All depends on intended interpretation. 
-
-OR <- exp(coef(mod.lr)['GroupGroup_2'])
-P0 <- p0_v2
-RR <- OR/( (1-P0) + (P0 * OR) )
-RR
-
-# RR computed above assumes Z = 0; to confirm, we compute it this way:
-p1 <- predict(mod.lr, type = 'response', newdata = data.frame('Group' = 'Group_2', 'Z' = 0))
-p0 <- predict(mod.lr, type = 'response', newdata = data.frame('Group' = 'Group_1','Z' = 0))
-p1/p0
-
-# Same value. This is the correct RR if you want to assume the base rate is when Z = 0. 
-
-# Note that it does NOT line up with the generating parameter:
-exp(Beta['GroupGroup_2', ])
-# Why? because the generating parameter doesn't assume the base rate is when Z = 0
-
 ```
 
+Now we have the odds ratio from the model, we can compute the relative risk using the formula we reviewed: OR/((1-P0) + (P0 * OR)). However, this formula requires the baseline prevalence. 
+
+
 ## Recover adjusted RR
-
-Can we recover the generating parameter? We want the probability of Y given Group membership, averaged over covariates. This is computing the RR marginalizing over the covariates. So this is the RR specific to the sample characteristics. You've selected a base rate specific to the sample
-
+We want the probability of Y given Group membership, averaged over covariates. This is computing the RR marginalizing over the covariates. So this is the RR specific to the sample characteristics. You've selected a base rate specific to the sample.
 
 ```{r rr1}
 p1i <- predict(mod.lr, type = 'response',
@@ -194,9 +151,8 @@ library(epitools)
 # Function is 'probratio()'
 # See documentation - marginalizes over observed covariates
 pr <- epitools::probratio(mod.lr, 
-                          method='ML', 
-                          scale='linear', 
-                          start=c(log(mean(dat$Y_binom)), -1,-1))
+                          method='delta', 
+                          scale='linear') 
 pr
 ```
 
@@ -225,244 +181,4 @@ mean(p1i)/mean(p0i)
 # same, but letting `epitools::probratio()` do all the work:
 pr
 
-
-# Logistic Regression (assume base rate is when Z = 0)
-RR
-p1/p0
-# Remember, this isn't wrong *if the research question is, tell me the RR when 
-# covariate Z = 0!*
-
-
 ```
-
-
-## Extension to Ordinal Models
-
-Just going to dump code here - note that the unadjusted lines up very nicely. 
-
-```{r ord1, eval = F}
-#-------------
-rm(list = ls())
-gc()
-N = 1e5 #this should be divisible by however many groups you use!
-number.groups <- 2
-number.timepoints <- 1
-set.seed(9132021)
-
-dat <- data.frame(
-                  'USUBJID' = rep(paste0('Subject_', formatC(1:N, width = 4, flag = '0')), length.out= N*number.timepoints),
-                  'Group' = rep(paste0('Group_', 1:number.groups), length.out = N*number.timepoints),
-                  stringsAsFactors=F)
-
-
-# Create Beta parameters for these design matrix:
-X <- model.matrix( ~ Group  , data = dat)
-
-
-# Create Beta
-Beta <- matrix(0, nrow = ncol(X), dimnames=list(colnames(X), 'param'))
-Beta[] <- c(0, -0.25)
-
-# Matrix multiply:
-XB <- X %*% Beta
-
-# Thresholds:
-thr <- c(-2.5, -1.5, -0.5)
-eta <- matrix(thr, nrow = nrow(XB), ncol = length(thr), byrow = T) -
-  matrix(XB, nrow = nrow(XB), ncol = length(thr), byrow = F)
-
-p <- exp(eta)/(1 + exp(eta))
-#p <- exp(eta) # I don't know how to do it this way
-range(p)
-dat$p <- p
-dat$Y <- apply(runif(n = N)  > p, 1, sum)
-
-
-# Quick barplot, base R plot functions
-aggregate(Y  ~ Group, FUN = function(x) round(mean(x, na.rm = T),2), dat = dat, na.action = na.pass)
-xtabs( ~ Y + Group, dat = dat, na.action = na.pass)
-barplot(100*table(dat$Y)/sum(table(dat$Y)),
-        ylim = c(0, 100), ylab = 'Percentage',
-        col = 'grey', main = 'Ordinal')
-
-library(ggplot2)
-ggplot(data = dat, aes(x= as.factor(Y), fill = Group)) +
-      geom_bar(aes(y = (..count..)/sum(..count..)), color="#e9ecef", alpha=0.6, position="dodge", stat="count") +
-      scale_y_continuous(labels=scales::percent_format(accuracy = 1)) +
-      scale_fill_manual(name = 'Groups', values=c("blue2", "red2")) +
-      theme_minimal() +
-      theme(legend.position = 'bottom') +
-      labs(x = 'Score', y = 'Percentage',
-           title = 'Scores with a Binomial Distribution',
-           caption = 'Note: Simulated data')
-
-#----
-# Key here is that this data is ORDERED
-
-# Observed Data:
-xtabs(~ Y + Group, data = dat)
-ptab <- prop.table(xtabs(~ Y + Group, data = dat), 2)
-# Percentage achieving each category across Groups:
-ptab
-
-# Fit ordinal regression
-# use the predicted probabilities to compute relative risk
-library(ordinal)
-mod.clm <- clm(as.factor(Y) ~ Group, data = dat)
-summary(mod.clm)
-beta <- summary(mod.clm)$beta
-alpha <- summary(mod.clm)$alpha
-
-
-# Group 2:
-XB <- matrix(summary(mod.clm)$beta)
-thr <- summary(mod.clm)$alpha
-eta <- matrix(thr, nrow = nrow(XB), ncol = length(thr), byrow = T) -
-  matrix(XB, nrow = nrow(XB), ncol = length(thr), byrow = F)
-p1 <- as.numeric(exp(eta)/(1 + exp(eta)))
-
-# Group 1
-XB <- matrix(0) # obviously this is more complicated with more predictors!
-thr <- summary(mod.clm)$alpha
-eta <- matrix(thr, nrow = nrow(XB), ncol = length(thr), byrow = T) -
-  matrix(XB, nrow = nrow(XB), ncol = length(thr), byrow = F)
-p0 <- (exp(eta)/(1 + exp(eta)))
-
-p0 <- as.numeric(c(0, p0, 1))
-p1 <- as.numeric(c(0, p1, 1))
-p0 <- diff(p0)
-p1 <- diff(p1)
-cbind(p0, p1)
-ptab
-ptab[, 'Group_1']/ptab[, 'Group_2']
-p0/p1
-#
-
-# > ptab[, 'Group_1']/ptab[, 'Group_2']
-#         0         1         2         3
-# 0.7987500 0.8373752 0.9105826 1.1056235
-# > p0/p1
-# [1] 0.7987899 0.8394065 0.9088316 1.1058414
-```
-
-### Adjusted Ordinal Model RR
-
-```{r ord2, eval = F}
-#-------------
-rm(list = ls())
-gc()
-N = 1e5 #this should be divisible by however many groups you use!
-number.groups <- 2
-number.timepoints <- 1
-set.seed(9152021)
-
-dat <- data.frame(
-                  'USUBJID' = rep(paste0('Subject_', formatC(1:N, width = 4, flag = '0')), length.out= N*number.timepoints),
-                  'Group' = rep(paste0('Group_', 1:number.groups), length.out = N*number.timepoints),
-                  stringsAsFactors=F)
-
-# Unbalanced:
-dat$Z <- rbinom(n = N, size = 1, prob = 0.4 + 0.4*(dat$Group == 'Group_1'))
-table(dat$Z)
-xtabs(~ Group + Z, data = dat)
-
-# Create Beta parameters for these design matrix:
-X <- model.matrix( ~ Group + Z , data = dat)
-
-
-# Create Beta
-Beta <- matrix(0, nrow = ncol(X), dimnames=list(colnames(X), 'param'))
-Beta[] <- c(0, -0.25, -0.25)
-
-# Matrix multiply:
-XB <- X %*% Beta
-
-# Thresholds:
-thr <- c(-2, -1, 0)
-eta <- matrix(thr, nrow = nrow(XB), ncol = length(thr), byrow = T) -
-  matrix(XB, nrow = nrow(XB), ncol = length(thr), byrow = F)
-
-p <- exp(eta)/(1 + exp(eta))
-#p <- exp(eta)
-dat$p <- p
-dat$Y <- apply(runif(n = N)  > p, 1, sum)
-
-
-# Quick barplot, base R plot functions
-aggregate(Y  ~ Group, FUN = function(x) round(mean(x, na.rm = T),2), dat = dat, na.action = na.pass)
-xtabs( ~ Y + Group, dat = dat, na.action = na.pass)
-barplot(100*table(dat$Y)/sum(table(dat$Y)),
-        ylim = c(0, 100), ylab = 'Percentage',
-        col = 'grey', main = 'Ordinal')
-
-library(ggplot2)
-ggplot(data = dat, aes(x= as.factor(Y), fill = Group)) +
-      geom_bar(aes(y = (..count..)/sum(..count..)), color="#e9ecef", alpha=0.6, position="dodge", stat="count") +
-      scale_y_continuous(labels=scales::percent_format(accuracy = 1)) +
-      scale_fill_manual(name = 'Groups', values=c("blue2", "red2")) +
-      theme_minimal() +
-      theme(legend.position = 'bottom') +
-      labs(x = 'Score', y = 'Percentage',
-           title = 'Scores with a Binomial Distribution',
-           caption = 'Note: Simulated data')
-
-#----
-# Key here is that this data is ORDERED
-
-# Observed Data:
-xtabs(~ Y + Group, data = dat)
-ptab <- prop.table(xtabs(~ Y + Group, data = dat), 2)
-# Percentage achieving each category across Groups:
-ptab
-
-# Fit ordinal regression
-# use the predicted probabilities to compute relative risk
-library(ordinal)
-mod.clm <- clm(as.factor(Y) ~ Group + Z, data = dat)
-summary(mod.clm)
-beta <- summary(mod.clm)$beta
-alpha <- summary(mod.clm)$alpha
-
-
-# Group 2:
-X1 <- cbind('Group' = rep(1, N), 'Z' = dat$Z)
-BB <- matrix(summary(mod.clm)$beta)
-XB <- X1 %*% BB
-#XB <- matrix(summary(mod.clm)$beta)
-thr <- summary(mod.clm)$alpha
-eta <- matrix(thr, nrow = nrow(XB), ncol = length(thr), byrow = T) -
-  matrix(XB, nrow = nrow(XB), ncol = length(thr), byrow = F)
-p1 <- exp(eta)/(1 + exp(eta))
-
-# Group 1
-X0 <- cbind('Group' = rep(0, N), 'Z' = dat$Z)
-BB <- matrix(summary(mod.clm)$beta)
-XB <- X0 %*% BB
-#XB <- matrix(0) # obviously this is more complicated with more predictors!
-thr <- summary(mod.clm)$alpha
-eta <- matrix(thr, nrow = nrow(XB), ncol = length(thr), byrow = T) -
-  matrix(XB, nrow = nrow(XB), ncol = length(thr), byrow = F)
-p0 <- exp(eta)/(1 + exp(eta))
-
-p0 <- cbind(0, p0, 1)
-p1 <- cbind(0, p1, 1)
-p0 <- t(apply(p0, 1, diff))
-p1 <- t(apply(p1, 1, diff))
-p0 <- colMeans(p0)
-p1 <- colMeans(p1)
-ptab
-cbind(p0, p1)
-ptab[, 'Group_1']/ptab[, 'Group_2']
-p0/p1
-
-#------------------------------------
-# > ptab[, 'Group_1']/ptab[, 'Group_2']
-#         0         1         2
-# 0.8732260 0.8552308 1.1510231
-
-# > p0/p1
-# [1] 0.6966564 0.8638131 1.2358708
-
-```
-
-
