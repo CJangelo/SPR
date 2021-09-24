@@ -195,15 +195,15 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R">    <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="fl">1</span>, FUN <span class="op">=</span> <span class="va">mean</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
 <span class="co">#&gt;           Y</span>
-<span class="co">#&gt; 1 0.8754304</span>
+<span class="co">#&gt; 1 0.6841984</span>
     <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="va">Group</span>, FUN <span class="op">=</span> <span class="va">mean</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
 <span class="co">#&gt;     Group         Y</span>
-<span class="co">#&gt; 1 Group_1 0.3998226</span>
-<span class="co">#&gt; 2 Group_2 1.3510383</span>
+<span class="co">#&gt; 1 Group_1 0.1088039</span>
+<span class="co">#&gt; 2 Group_2 1.2595930</span>
     <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="va">Group</span>, FUN <span class="op">=</span> <span class="va">var</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
 <span class="co">#&gt;     Group        Y</span>
-<span class="co">#&gt; 1 Group_1 8.775030</span>
-<span class="co">#&gt; 2 Group_2 8.648191</span>
+<span class="co">#&gt; 1 Group_1 9.369600</span>
+<span class="co">#&gt; 2 Group_2 8.933969</span>
     
     <span class="co"># Model?</span>
     <span class="va">mod</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">Y</span> <span class="op">~</span> <span class="va">Group</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
@@ -213,21 +213,21 @@
 <span class="co">#&gt; lm(formula = Y ~ Group, data = dat)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Residuals:</span>
-<span class="co">#&gt;     Min      1Q  Median      3Q     Max </span>
-<span class="co">#&gt; -8.9498 -1.8698 -0.0139  1.8932  8.6752 </span>
+<span class="co">#&gt;      Min       1Q   Median       3Q      Max </span>
+<span class="co">#&gt; -10.5052  -2.1546  -0.0755   2.1311   9.4555 </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Coefficients:</span>
 <span class="co">#&gt;              Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="co">#&gt; (Intercept)    0.3998     0.1320   3.029  0.00252 ** </span>
-<span class="co">#&gt; GroupGroup_2   0.9512     0.1867   5.096 4.16e-07 ***</span>
+<span class="co">#&gt; (Intercept)    0.1088     0.1353   0.804    0.421    </span>
+<span class="co">#&gt; GroupGroup_2   1.1508     0.1913   6.015 2.53e-09 ***</span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Residual standard error: 2.952 on 998 degrees of freedom</span>
-<span class="co">#&gt; Multiple R-squared:  0.02536,    Adjusted R-squared:  0.02438 </span>
-<span class="co">#&gt; F-statistic: 25.97 on 1 and 998 DF,  p-value: 4.155e-07</span>
+<span class="co">#&gt; Residual standard error: 3.025 on 998 degrees of freedom</span>
+<span class="co">#&gt; Multiple R-squared:  0.03498,    Adjusted R-squared:  0.03401 </span>
+<span class="co">#&gt; F-statistic: 36.18 on 1 and 998 DF,  p-value: 2.526e-09</span>
     <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">$</span><span class="va">sigma</span>
-<span class="co">#&gt; [1] 2.951544</span>
+<span class="co">#&gt; [1] 3.025192</span>
     <span class="co"># g2g</span>
   </code></pre></div>
 </div>
@@ -265,9 +265,9 @@
 
 <span class="co"># Compare observed vs predicted:</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">Y.hat</span><span class="op">)</span>
-<span class="co">#&gt; [1] 0.8754304</span>
+<span class="co">#&gt; [1] 0.6841984</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>
-<span class="co">#&gt; [1] 0.8754304</span>
+<span class="co">#&gt; [1] 0.6841984</span>
 <span class="co"># Compare parameter estimates:</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span>
   <span class="st">'Gen param'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">Beta</span>, <span class="va">sigma2</span><span class="op">)</span>, 
@@ -275,9 +275,9 @@
   <span class="st">'R package'</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">$</span><span class="va">sigma</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>
 <span class="op">)</span>
 <span class="co">#&gt;    Gen param Custom Function R package</span>
-<span class="co">#&gt; b0       0.2       0.3998226 0.3998226</span>
-<span class="co">#&gt; b1       1.0       0.9512156 0.9512157</span>
-<span class="co">#&gt;          9.0       8.7116102 8.7116102</span></code></pre></div>
+<span class="co">#&gt; b0       0.2       0.1088039 0.1088039</span>
+<span class="co">#&gt; b1       1.0       1.1507891 1.1507891</span>
+<span class="co">#&gt;          9.0       9.1517847 9.1517847</span></code></pre></div>
 </div>
   </div>
 
