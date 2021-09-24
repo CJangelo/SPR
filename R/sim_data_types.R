@@ -1,4 +1,6 @@
 #' Simulate Conditional Longitudinal Data
+#'
+#'
 #' This is a conditional model with a random intercept
 #'
 #' Select the data type you want to generate - this is best suited for
