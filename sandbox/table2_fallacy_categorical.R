@@ -18,7 +18,7 @@ rm(list = ls())
 gc()
 
 set.seed(5232021)
-n = 1e6
+n = 1e4
 age <- rnorm(n = n, mean = 0, sd = 1)
   slope <- .2*age #+ rnorm(n = n, mean = 0, sd = .1)
   p <- 1/(1+exp((slope - mean(slope))))
@@ -26,7 +26,7 @@ age <- rnorm(n = n, mean = 0, sd = 1)
     slope <- .3*age + .2*smoking# + rnorm(n = n, mean = 0, sd = .1)
     p <- 1/(1+exp((slope - mean(slope))))
     hiv <- 1*(runif(n = n) > p)
-      slope <- .2*age + .2*smoking + .3*hiv #+ rnorm(n = n, mean = 0, sd = .1)
+      slope <- 1*age + 1*smoking + 1*hiv #+ rnorm(n = n, mean = 0, sd = .1)
       p <- 1/(1+exp((slope - mean(slope))))
       stroke <- 1*runif(n = n) > p
 
@@ -44,10 +44,10 @@ age <- rnorm(n = n, mean = 0, sd = 1) #standardize age so mean of 40y/o is zero
   slope <- 4*age + 4*U #+ rnorm(n = n, mean = 0, sd = .1)
   p <- 1/(1+exp((slope - mean(slope))))
   smoking <- 1*(runif(n = n) > p)
-    slope <- .3*age + .2*smoking #+ rnorm(n = n, mean = 0, sd = .1)
+    slope <- 1*age + 1*smoking #+ rnorm(n = n, mean = 0, sd = .1)
     p <- 1/(1+exp((slope - mean(slope))))
     hiv <- 1*(runif(n = n) > p)
-      slope <- .2*age + .2*smoking + .3*hiv #+ rnorm(n = n, mean = 0, sd = 0.1)
+      slope <- 1*age + 1*smoking + 1*hiv #+ rnorm(n = n, mean = 0, sd = 0.1)
       p <- 1/(1+exp((slope - mean(slope))))
       stroke <- 1*(runif(n = n) > p)
 
@@ -56,9 +56,12 @@ mod.check <- glm(stroke ~ age + smoking + hiv, family = 'binomial')
 coef(mod.check)
 # Also g2g, note that model not in the manuscript! This is to check.
 
+# save these variables:
+df1 <- data.frame(stroke, age, smoking, hiv, stringsAsFactors = F)
+colnames(df1) <- paste0(colnames(df1), '_Fig1')
 
 # Figure 2: U also contributes to stroke
-slope <- .2*U + .2*age + .2*smoking + .3*hiv #+ rnorm(n = n, mean = 0, sd = 0.1)
+slope <- 1*U + 1*age + 1*smoking + 1*hiv #+ rnorm(n = n, mean = 0, sd = 0.1)
 p <- 1/(1+exp((slope - mean(slope))))
 stroke2 <- 1*runif(n = n) > p
 
@@ -74,7 +77,21 @@ mod4 <- glm(stroke2 ~ U + age + smoking + hiv, family = 'binomial')
 coef(mod4)
 # estimates correct
 
+#---------------------------------
+# write it out:
 
+df2 <- data.frame(stroke, U, age, smoking, hiv, stringsAsFactors = F)
+colnames(df2) <- paste0(colnames(df2), '_Fig2')
+df <- cbind.data.frame(df1, df2)
+
+write.table(df, na = '.', quote = F,
+            sep = ', ', col.names = T,
+            row.names = F, file = 'data_table2_fallacy.txt')
+# covers Figures 1 and 2, up through Page 3 to the beginning
+# of the section "INTERPRETATION GETS HARDER WITH HETEROGENEITY"
+
+
+#----------------------------------------
 # heterogeneity
 # Model 3:
 slope <-
