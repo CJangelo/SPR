@@ -8,7 +8,7 @@
 #' @param Beta this is the Beta for the regression equation; numeric matrix of Beta values OR a scalar value != 0
 #' that will be the final value of the interaction parameters, default is all(Beta == 0) for Type I error simulations
 #' @param thresholds the ordinal generation uses a logistic approach,
-#' and these are the tresholds
+#' and these are the thresholds
 #' @param corr options for correlation structure  c('ind', 'ar1', 'cs'), default is 'ar1'
 #' @param cor.value numeric, the first corr in ar1, the corr in cs option
 #' @param cond.mcar logical; do you want a conditional MCAR data generation

@@ -8,7 +8,7 @@
 #' the conditional model with a random intercept
 #'
 #' @param data.type Specify the type of data you want to generate. Select
-#' one from the following: 'Ordinal', 'Beta', 'Gaussian', 'NegBinom',
+#' one from the following: 'Binomial', 'Ordinal', 'Beta', 'Gaussian', 'NegBinom',
 #' 'ZIP', 'ZINB', 'Multinom'. This must be a character vector of length 1.
 #' @param reg.formula this is a regression formula to pass to the data generation; null is
 #' formula(~ Group + Time + Time*Group),
@@ -19,7 +19,6 @@
 #' @param subject.var the subject-level variance, also known as the variance
 #' associated with the random intercept
 #' @param sigma2 the residual error in Gaussian data
-#' @param shape2 parameter in Beta distribution
 #' @param phi parameter in Beta distribution
 #' @param theta size parameter in NB
 #' @param zip zero inflation parameter
@@ -37,7 +36,7 @@ sim_dat_types <- function(N = 1000,
                           reg.formula = NULL,
                           Beta = NULL,
                           sigma2 = NULL,
-                          shape2 = NULL,
+                          ##shape2 = NULL,
                           phi = NULL,
                           theta = NULL,
                           zip = NULL,
@@ -89,7 +88,6 @@ sim_dat_types <- function(N = 1000,
 
   #
   if (data.type == 'Beta') {
-    if (is.null(shape2)) shape2 <- 5
     if (is.null(phi)) phi <- 10
   }
 
@@ -160,6 +158,21 @@ sim_dat_types <- function(N = 1000,
     eta <- as.vector(eta)
     error <- rnorm(n = N*number.timepoints, mean = 0, sd = sqrt(sigma2))
     dat$Y_gaussian <- eta + error
+
+  }
+
+  #-----------------------------------------------
+  # Binomial
+  if (data.type == 'binomial') {
+    XB <- X %*% Beta
+    mat.XB <- matrix(XB, nrow = nrow(XB), ncol = length(thresholds), byrow = F)
+    #mat.thr <- matrix(thresholds, nrow = nrow(XB), ncol = length(thresholds), byrow = T)
+    Zi <- rnorm(n = N, mean = 0, sd = sqrt(subject.var))
+    mat.Zi <- matrix(Zi, nrow = nrow(mat.XB), ncol = ncol(mat.XB), byrow = F)
+    #eta <- mat.thr - mat.XB + mat.Zi
+    eta <- mat.XB + mat.zi
+    p <- exp(eta)/(1 + exp(eta))
+    dat$Y_ord <- as.vector(apply(runif(n = N*number.timepoints) > p, 1, sum))
 
   }
 
@@ -319,7 +332,6 @@ sim_dat_types <- function(N = 1000,
               'subject.var' = subject.var,
               'sigma2' = sigma2,
               'phi' = phi,
-              'shape2' = shape2,
               'theta' = theta,
               'thresholds' = thresholds,
               'k' = k
