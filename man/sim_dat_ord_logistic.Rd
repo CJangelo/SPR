@@ -25,7 +25,7 @@ formula(~ Group + Time + Time*Group),}
 that will be the final value of the interaction parameters, default is all(Beta == 0) for Type I error simulations}
 
 \item{thresholds}{the ordinal generation uses a logistic approach,
-and these are the tresholds}
+and these are the thresholds}
 
 \item{corr}{options for correlation structure  c('ind', 'ar1', 'cs'), default is 'ar1'}
 

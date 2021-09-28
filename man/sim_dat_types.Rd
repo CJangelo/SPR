@@ -2,8 +2,7 @@
 % Please edit documentation in R/sim_data_types.R
 \name{sim_dat_types}
 \alias{sim_dat_types}
-\title{Simulate Conditional Longitudinal Data
-This is a conditional model with a random intercept}
+\title{Simulate Conditional Longitudinal Data}
 \usage{
 sim_dat_types(
   N = 1000,
@@ -13,7 +12,6 @@ sim_dat_types(
   reg.formula = NULL,
   Beta = NULL,
   sigma2 = NULL,
-  shape2 = NULL,
   phi = NULL,
   theta = NULL,
   zip = NULL,
@@ -24,7 +22,7 @@ sim_dat_types(
 }
 \arguments{
 \item{data.type}{Specify the type of data you want to generate. Select
-one from the following: 'Ordinal', 'Beta', 'Gaussian', 'NegBinom',
+one from the following: 'Binomial', 'Ordinal', 'Beta', 'Gaussian', 'NegBinom',
 'ZIP', 'ZINB', 'Multinom'. This must be a character vector of length 1.}
 
 \item{reg.formula}{this is a regression formula to pass to the data generation; null is
@@ -34,8 +32,6 @@ formula(~ Group + Time + Time*Group),}
 that will be the final value of the interaction parameters, default is all(Beta == 0) for Type I error simulations}
 
 \item{sigma2}{the residual error in Gaussian data}
-
-\item{shape2}{parameter in Beta distribution}
 
 \item{phi}{parameter in Beta distribution}
 
@@ -54,6 +50,9 @@ associated with the random intercept}
 returns a dataframe containing the simulated data
 }
 \description{
+This is a conditional model with a random intercept
+}
+\details{
 Select the data type you want to generate - this is best suited for
 fitting data in \code{glmmTMB()} among other R packages that are based on
 the conditional model with a random intercept
