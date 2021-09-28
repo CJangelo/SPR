@@ -163,16 +163,17 @@ sim_dat_types <- function(N = 1000,
 
   #-----------------------------------------------
   # Binomial
-  if (data.type == 'binomial') {
+  if (data.type == 'Binomial') {
     XB <- X %*% Beta
-    mat.XB <- matrix(XB, nrow = nrow(XB), ncol = length(thresholds), byrow = F)
+    mat.XB <- XB
+    #mat.XB <- matrix(XB, nrow = nrow(XB), ncol = length(thresholds), byrow = F)
     #mat.thr <- matrix(thresholds, nrow = nrow(XB), ncol = length(thresholds), byrow = T)
     Zi <- rnorm(n = N, mean = 0, sd = sqrt(subject.var))
     mat.Zi <- matrix(Zi, nrow = nrow(mat.XB), ncol = ncol(mat.XB), byrow = F)
     #eta <- mat.thr - mat.XB + mat.Zi
-    eta <- mat.XB + mat.zi
+    eta <- -1*mat.XB + mat.Zi
     p <- exp(eta)/(1 + exp(eta))
-    dat$Y_ord <- as.vector(apply(runif(n = N*number.timepoints) > p, 1, sum))
+    dat$Y_binom <- as.vector(apply(runif(n = N*number.timepoints) > p, 1, sum))
 
   }
 
