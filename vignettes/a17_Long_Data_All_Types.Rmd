@@ -1,0 +1,165 @@
+---
+title: "Longitudinal Data, All Data Types, Conditional Specification"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Long_Data_All_Types}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Can create cross-sectional and longitudinal data with this. Next step is do a more careful walk-through. 
+
+
+## Cross Sectional Data
+
+First load the R packages
+```{r setup, eval = F}
+# Requires these R packages:
+library(SPR)
+library(glmmTMB)
+library(lme4)
+library(ordinal)
+```
+
+Create cross sectional data by 
+
+- set number of timepoints equal to 1
+- set the variance of the random intercept equal to 0
+- pass a regression formula that does not contain time as a variable
+
+```{r t1, eval = F}
+
+#----
+# Check if we can create cross-sectional data:
+sim.out <- SPR::sim_dat_types(N=5000, 
+                              data.type = 'Ordinal',
+                              reg.formula =  formula(~Group),
+                              subject.var = 0, 
+                              number.timepoints = 1)
+  
+dat <- sim.out$dat
+modt1 <- ordinal::clm(ordered(Y_ord) ~ Group, data = dat)
+summary(modt1)
+```
+
+## Longitudinal data
+
+Looks like we can create cross-sectional data just fine. Let's try some longitudinal data
+
+With this function, the defaults are:
+
+- number of timepoints is 4
+- regression formula is `~ Group + Time + Group*Time`
+- random intercept variance (subject variance) is `subject.var = 1`
+
+You can use those or change 'em. 
+
+```{r t4, eval = F}
+
+#---
+# ZINB
+sim.out <- SPR::sim_dat_types(N=2000,
+                         data.type = 'ZINB',
+                         reg.formula = formula(~ Time))
+  dat <- sim.out$dat
+mod <- glmmTMB::glmmTMB(Y_zinb ~ Time + (1|USUBJID),
+                ziformula = ~ 1,
+                data = dat,
+                family = nbinom2(link = "log"))
+summary(mod)
+
+#--------
+# ZIP
+sim.out <- SPR::sim_dat_types(N=2000,
+                         data.type = 'ZIP',
+                         reg.formula = formula(~ Time))
+  dat <- sim.out$dat
+mod <- glmmTMB(Y_zip ~ Time + (1|USUBJID),
+                ziformula = ~ 1,
+                data = dat,
+                family = poisson)
+summary(mod)
+
+#--------------
+# Gaussian
+library(lme4)
+sim.out <- SPR::sim_dat_types(data.type = 'Gaussian')
+  dat <- sim.out$dat
+mod1 <- lme4::lmer(Y_gaussian ~ Group + Time + Group*Time + (1|USUBJID),
+             data = dat)
+summary(mod1)
+
+#---
+# Gaussian - aligns with lme4
+sim.out <- SPR::sim_dat_types(data.type = 'Gaussian')
+  dat <- sim.out$dat
+mod0 <- glmmTMB(Y_gaussian ~ Group + Time + Group*Time + (1|USUBJID),
+                data = dat,
+                family = gaussian)
+summary(mod0)
+
+
+#---
+# Poisson
+sim.out <- SPR::sim_dat_types(data.type = 'Poisson')
+  dat <- sim.out$dat
+mod1 <- glmmTMB(Y_pois ~ Group + Time + Group*Time + (1|USUBJID),
+                data = dat,
+                family = poisson)
+summary(mod1)
+
+#---
+# Negative Binomial
+sim.out <- SPR::sim_dat_types(data.type = 'NegBinom')
+  dat <- sim.out$dat
+mod2 <- glmmTMB(Y_nb ~ Group + Time + Group*Time + (1|USUBJID),
+                data = dat,
+                family = nbinom2(link = "log"))
+summary(mod2)
+
+
+
+#---
+# Beta distribution
+sim.out <- SPR::sim_dat_types(data.type = 'Beta')
+  dat <- sim.out$dat
+mod3 <- glmmTMB(Y_beta ~ Group + Time + Group*Time + (1|USUBJID),
+                data = dat,
+                family = beta_family(link = "logit"))
+summary(mod3)
+
+
+
+library(ordinal)
+#---
+# Ordinal
+sim.out <- SPR::sim_dat_types(data.type = 'Ordinal')
+  dat <- sim.out$dat
+mod4 <- clmm(ordered(Y_ord) ~ Group + Time + Group*Time + (1|USUBJID),
+             data = dat)
+summary(mod4)
+sim.out$thresholds
+sim.out$Beta
+
+
+#---
+# Nominal data
+sim.out <- sim_dat_types(N = 5000,
+                         data.type = 'Multinom',
+                         reg.formula =  formula(~ Time) )
+  dat <- sim.out$dat
+
+library(nnet)
+dat$Y_nom_factor <- as.factor(dat$Y_nom)
+mod <- nnet:::multinom(Y_nom_factor ~ Time, data = dat)
+summary(mod)
+t(coef(mod))
+sim.out$Beta
+```

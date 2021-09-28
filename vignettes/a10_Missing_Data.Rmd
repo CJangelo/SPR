@@ -1,0 +1,260 @@
+---
+title: "How to Handle Missing Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Missing_Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Example 1: MCAR
+MCAR (standard interpretation of MCAR - descriptive statistics sufficient!)
+
+
+```{r mcar_1, eval = F}
+
+library(MASS)
+library(emmeans)
+library(nlme)
+library(SPR) 
+  
+  out <- sim_dat(N = 2000, 
+                 number.groups = 2 , 
+                 number.timepoints = 4, 
+                 reg.formula = formula( ~ Time + Group + Time*Group),
+                 Beta = 2,
+                 corr = 'ar1', 
+                 cor.value = 0.8, 
+                 var.values = 2)
+                
+  
+  dat <- out$dat
+  dat <- dropout(dat = dat, 
+                 type_dropout  = c('mcar'), 
+                 prop.miss = 0.3)
+  
+ 
+#  OLS Regression Model 
+  mod.ols1 <- lm(Y_comp ~ Time + Group + Time*Group, 
+                 data = dat)
+
+  mod.ols2 <- lm(Y_mcar ~ Group + Time + Group*Time, 
+                            data = dat)
+
+#   MMRM 
+  library(nlme)
+  mod.gls1 <- gls(Y_comp ~ Group + Time + Group*Time,
+                  data = dat,
+                  correlation = corSymm(form = ~ 1 | USUBJID),    #  unstructured correlation
+                  weights = varIdent(form = ~ 1 | Time),          #  freely estimate variance at subsequent timepoints
+                  na.action = na.exclude)
+
+
+  mod.gls2 <- gls(Y_mcar ~ Group + Time + Group*Time,
+                  data = dat,
+                  correlation = corSymm(form = ~ 1 | USUBJID),    #  unstructured correlation
+                  weights = varIdent(form = ~ 1 | Time),          #  freely estimate variance at subsequent timepoints
+                  na.action = na.exclude)
+  
+  
+  # Compute marginal mean contrasts
+  library(emmeans)
+  mod.emms.ols1 <- emmeans(mod.ols1, pairwise ~ Group | Time, adjust = 'none',  mode = 'df.error')
+  mod.emms.ols2 <- emmeans(mod.ols2, pairwise ~ Group | Time, adjust = 'none',  mode = 'df.error')
+
+ # mod.emms.gls1 <- emmeans(mod.gls1, pairwise ~ Group | Time, adjust = 'none',  mode = 'satterthwaite')
+  mod.emms.gls1 <- emmeans(mod.gls1, pairwise ~ Group | Time, adjust = 'none',  mode = 'df.error')
+ # mod.emms.gls2 <- emmeans(mod.gls2, pairwise ~ Group | Time, adjust = 'none',  mode = 'satterthwaite')
+  mod.emms.gls2 <- emmeans(mod.gls2, pairwise ~ Group | Time, adjust = 'none',  mode = 'df.error')
+# Analytical Satterthwaite method not available; using appx-satterthwaite
+# Error: Can't estimate Satterthwaite parameters.
+#   Try adding the argument 'mode = "df.error"'
+ 
+```
+
+## MCAR: Examine output
+
+```{r mcar_2, eval = F}
+
+  out$Beta
+  # Look at drop-out:
+  aggregate(Y_mcar ~ Time, FUN = function(x) mean(is.na(x)), dat = dat, na.action = na.pass)
+  aggregate(Y_mcar ~ Group + Time, FUN = function(x) mean(is.na(x)), dat = dat, na.action = na.pass)
+  # Approximately equal across both treatment arms - already know there's no way for the drop-out to bias
+  # the treatment arm comparisons!
+  
+  # Descriptive Statistics 
+  # Sufficient with MCAR drop out - both complete and missing align, yield unbiased estimates:
+  aggregate(Y_comp ~ Group + Time, FUN = function(x) round(mean(x, na.rm = T),5), dat = dat, na.action = na.pass)
+  aggregate(Y_mcar ~ Group + Time, FUN = function(x) round(mean(x, na.rm = T),5), dat = dat, na.action = na.pass)
+
+  # OLS likewise recovers unbiased parameters using complete data AND with MCAR drop-out
+  mod.emms.ols1$contrasts
+  mod.emms.ols2$contrasts
+  # Here we are only running a single replication to illustrate the unbiased estimates
+  # if we ran a full simulation study, we would see that RMSE increases under MCAR drop-out,
+  # resulting from the reduction in sample size - no getting away from that!
+  mod.emms.gls1$contrasts
+  mod.emms.gls2$contrasts
+  # Can see that the correctly specified model - MMRM - yields the same estimates
+#
+```
+
+## Test MCAR Assumption
+Does your score at a previous timepoint predict your score at the next timepoint? Let's make our life easy and just do the following:
+
+```{r mcar_3, eval = F}
+
+
+dat1 <- dat[dat$Time == 'Time_3', 'Y_mcar']
+dat2 <- dat[dat$Time == 'Time_4', 'Y_mcar']
+dropped.out <- !is.na(dat1) & is.na(dat2) # these subjects dropped out at timepoint 4
+table(dropped.out)
+
+# Does the score at timepoint 3 predict drop-out at timepoint 4?
+mod <- glm(dropped.out ~ dat1, family = 'binomial')
+summary(mod)
+# This is evidence suggesting that the dropout may be MCAR
+# Later we will re-compute this test on MAR dropout
+
+
+```
+
+
+# Example 2: MAR Drop-out
+MAR with correlation = 0.8  (standard interpretation of MAR dropout - descriptive statistics, OLS not sufficient!)
+
+```{r mar_1, eval = F}
+
+  dat <- out$dat
+  dat <- dropout(dat = dat, 
+                 type_dropout  = c('mar'), 
+                 prop.miss = 0.3)
+ 
+# Test for MCAR
+# Does your score at a previous timepoint predict your score at the next timepoint?
+dat1 <- dat[dat$Time == 'Time_3', 'Y_mar']
+dat2 <- dat[dat$Time == 'Time_4', 'Y_mar']
+dropped.out <- !is.na(dat1) & is.na(dat2) # these subjects dropped out at timepoint 4
+table(dropped.out)
+
+# Does the score at timepoint 3 predict drop-out at timepoint 4?
+mod <- glm(dropped.out ~ dat1, family = 'binomial')
+summary(mod)  
+# Reject null hypothesis; timepoint 3 predicts dropout at next timepoint
+# Evidence against MCAR drop-out
+
+
+
+#  OLS Regression Model 
+  mod.ols2 <- lm(Y_mar ~ Group + Time + Group*Time, data = dat)
+
+# MMRM
+  mod.gls2 <- gls(Y_mar ~ Group + Time + Group*Time,
+                  data = dat,
+                  correlation = corSymm(form = ~ 1 | USUBJID),    #  unstructured correlation
+                  weights = varIdent(form = ~ 1 | Time),          #  freely estimate variance at subsequent timepoints
+                  na.action = na.exclude)
+
+# Marginal Contrasts:
+  mod.emms.ols2 <- emmeans(mod.ols2, pairwise ~ Group | Time, adjust = 'none',  mode = 'df.error')
+  mod.emms.gls2 <- emmeans(mod.gls2, pairwise ~ Group | Time, adjust = 'none',  mode = 'df.error')
+  
+  # Examine output:
+  out$Beta
+  # Look at drop-out:
+  aggregate(Y_mar ~ Time, FUN = function(x) mean(is.na(x)), dat = dat, na.action = na.pass)
+  aggregate(Y_mar ~ Group + Time, FUN = function(x) mean(is.na(x)), dat = dat, na.action = na.pass)
+  # Substantial differential rates of drop-out across the two treatment arms
+
+  # Descriptive Statistics 
+  # Substantial bias in the descriptive statistics when MAR dropout
+  aggregate(Y_comp ~ Group + Time, FUN = function(x) round(mean(x, na.rm = T),2), dat = dat, na.action = na.pass)
+  aggregate(Y_mar ~ Group + Time, FUN = function(x) round(mean(x, na.rm = T),2), dat = dat, na.action = na.pass)
+  # Do the arithmetic with the decsriptive statistics, compare to OLS:
+  
+  # OLS likewise has substantial bias with MAR dropout:
+  mod.emms.ols1$contrasts
+  mod.emms.ols2$contrasts
+  # Notice that the OLS contrasts are equal to those using descriptive statistics
+
+  # MMRM is correctly specified model:
+  mod.emms.gls1$contrasts
+  mod.emms.gls2$contrasts
+  # MMRM unbiased with MAR drop-out
+  # In this single replication, we see very little bias
+  # Not bad for 30% drop-out!
+```
+
+# Example 3: MNAR Drop-out
+MNAR with correlation = 0.8 (standard interpretation of MNAR - nothing works!)
+
+```{r mnar_1, eval = F}
+
+ dat <- out$dat
+  dat <- dropout(dat = dat, 
+                 type_dropout  = c('mnar'), 
+                 prop.miss = 0.3)
+
+# Test for MCAR 
+# Does your score at a previous timepoint predict your score at the next timepoint?
+dat1 <- dat[dat$Time == 'Time_3', 'Y_mnar']
+dat2 <- dat[dat$Time == 'Time_4', 'Y_mnar']
+dropped.out <- !is.na(dat1) & is.na(dat2) # these subjects dropped out at timepoint 4
+table(dropped.out)
+
+# Does the score at timepoint 3 predict drop-out at timepoint 4?
+mod <- glm(dropped.out ~ dat1, family = 'binomial')
+summary(mod)  
+# Reject null hypothesis; timepoint 3 predicts dropout at next timepoint
+# Evidence against MCAR drop-out
+
+ 
+#  OLS Regression Model 
+  mod.ols2 <- lm(Y_mnar ~ Group + Time + Group*Time, 
+                            data = dat)
+
+# MMRM
+  mod.gls2 <- gls(Y_mnar ~ Group + Time + Group*Time,
+                  data = dat,
+                  correlation = corSymm(form = ~ 1 | USUBJID),    #  unstructured correlation
+                  weights = varIdent(form = ~ 1 | Time),          #  freely estimate variance at subsequent timepoints
+                  na.action = na.exclude)  
+  
+# Marginal Contrasts:
+  mod.emms.ols2 <- emmeans(mod.ols2, pairwise ~ Group | Time, adjust = 'none',  mode = 'df.error')
+  mod.emms.gls2 <- emmeans(mod.gls2, pairwise ~ Group | Time, adjust = 'none',  mode = 'df.error')
+ 
+  # Examine output:
+  out$Beta
+  # Look at drop-out:
+  aggregate(Y_mnar ~ Time, FUN = function(x) mean(is.na(x)), dat = dat, na.action = na.pass)
+  aggregate(Y_mnar ~ Group + Time, FUN = function(x) mean(is.na(x)), dat = dat, na.action = na.pass)
+  # Substantial differential rates of drop-out across the two treatment arms
+
+  # Descriptive Statistics 
+  # Substantial bias in the descriptive statistics when MAR dropout
+  aggregate(Y_comp ~ Group + Time, FUN = function(x) round(mean(x, na.rm = T),2), dat = dat, na.action = na.pass)
+  aggregate(Y_mnar ~ Group + Time, FUN = function(x) round(mean(x, na.rm = T),2), dat = dat, na.action = na.pass)
+
+  # OLS likewise has substantial bias with MAR dropout:
+  mod.emms.ols1$contrasts
+  mod.emms.ols2$contrasts
+  # 25% bias!
+
+  # MMRM is correctly specified model:
+  mod.emms.gls1$contrasts
+  mod.emms.gls2$contrasts
+  # MMRM still biased with MNAR drop-out
+  # However, it's not AS BAS as OLS and descriptive statistics
+``` 
+
+
