@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Simulate Conditional Longitudinal Data
-This is a conditional model with a random intercept — sim_dat_types • SPR</title>
+<title>Simulate Conditional Longitudinal Data — sim_dat_types • SPR</title>
 
 
 <!-- jquery -->
@@ -40,11 +39,8 @@ This is a conditional model with a random intercept — sim_dat_types • SPR</t
 
 
 
-<meta property="og:title" content="Simulate Conditional Longitudinal Data
-This is a conditional model with a random intercept — sim_dat_types" />
-<meta property="og:description" content="Select the data type you want to generate - this is best suited for
-fitting data in glmmTMB() among other R packages that are based on
-the conditional model with a random intercept" />
+<meta property="og:title" content="Simulate Conditional Longitudinal Data — sim_dat_types" />
+<meta property="og:description" content="This is a conditional model with a random intercept" />
 
 
 
@@ -76,7 +72,7 @@ the conditional model with a random intercept" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SPR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -182,16 +178,13 @@ the conditional model with a random intercept" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Simulate Conditional Longitudinal Data
-This is a conditional model with a random intercept</h1>
+    <h1>Simulate Conditional Longitudinal Data</h1>
     
     <div class="hidden name"><code>sim_dat_types.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Select the data type you want to generate - this is best suited for
-fitting data in <code>glmmTMB()</code> among other R packages that are based on
-the conditional model with a random intercept</p>
+    <p>This is a conditional model with a random intercept</p>
     </div>
 
     <pre class="usage"><span class='fu'>sim_dat_types</span><span class='op'>(</span>
@@ -202,7 +195,6 @@ the conditional model with a random intercept</p>
   reg.formula <span class='op'>=</span> <span class='cn'>NULL</span>,
   Beta <span class='op'>=</span> <span class='cn'>NULL</span>,
   sigma2 <span class='op'>=</span> <span class='cn'>NULL</span>,
-  shape2 <span class='op'>=</span> <span class='cn'>NULL</span>,
   phi <span class='op'>=</span> <span class='cn'>NULL</span>,
   theta <span class='op'>=</span> <span class='cn'>NULL</span>,
   zip <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -217,7 +209,7 @@ the conditional model with a random intercept</p>
     <tr>
       <th>data.type</th>
       <td><p>Specify the type of data you want to generate. Select
-one from the following: 'Ordinal', 'Beta', 'Gaussian', 'NegBinom',
+one from the following: 'Binomial', 'Ordinal', 'Beta', 'Gaussian', 'NegBinom',
 'ZIP', 'ZINB', 'Multinom'. This must be a character vector of length 1.</p></td>
     </tr>
     <tr>
@@ -233,10 +225,6 @@ that will be the final value of the interaction parameters, default is all(Beta 
     <tr>
       <th>sigma2</th>
       <td><p>the residual error in Gaussian data</p></td>
-    </tr>
-    <tr>
-      <th>shape2</th>
-      <td><p>parameter in Beta distribution</p></td>
     </tr>
     <tr>
       <th>phi</th>
@@ -268,6 +256,11 @@ associated with the random intercept</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>returns a dataframe containing the simulated data</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Select the data type you want to generate - this is best suited for
+fitting data in <code>glmmTMB()</code> among other R packages that are based on
+the conditional model with a random intercept</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
