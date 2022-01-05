@@ -18,10 +18,22 @@ sim.out <- SPR::sim_dat_types(N=5000,
                               number.timepoints = 1)
 
 dat <- sim.out$dat
+  sim.out$Beta
+  sim.out$thresholds
 modt1 <- ordinal::clm(ordered(Y_ord) ~ Group, data = dat)
 summary(modt1)
 # looks like we can create cross-sectional data just fine
 
+sim.out <- SPR::sim_dat_types(N=5000,
+                              data.type = 'Binomial',
+                              reg.formula =  formula(~Group),
+                              subject.var = 0,
+                              number.timepoints = 1)
+
+dat <- sim.out$dat
+  sim.out$Beta
+mod2 <- glm(Y_binom ~ Group, data = dat, family = 'binomial')
+summary(mod2)
 
 #---
 # ZINB

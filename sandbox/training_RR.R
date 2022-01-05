@@ -47,7 +47,7 @@ round(range(p), 2)
 dat$Y_binom <- as.vector(1*(p > runif(n = N)))
 
 write.table(dat, na = '.', quote = F,
-            sep = ', ', col.names = T,
+            sep = ',', col.names = T,
             row.names = F, file = 'RR_training_dataset.txt')
 
 
