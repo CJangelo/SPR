@@ -38,6 +38,7 @@ library(nlme)
 test <- lme(Y ~ Group*Time, random =  ~ Time | USUBJID, data = dat)
 summary(test)
 fixed.effects(test)
+out$Beta
 # g2g
 
 #---------

@@ -9,7 +9,7 @@ sim_dat_surv <- function(dat.PRO = NULL, reg.formula = NULL){
 
   # Create Beta
   Beta <- matrix(0, nrow = ncol(X), dimnames=list(colnames(X), 'param'))
-    Beta[] <- c(-5, 0)
+    Beta[] <- c(-5, 1)
 
   # Matrix multiply:
   XB <- X %*% Beta
@@ -19,7 +19,7 @@ sim_dat_surv <- function(dat.PRO = NULL, reg.formula = NULL){
 
   # Hazard Ratio
   h0 <- 1  # Baseline HR: I guess just set this value? TODO
-  alpha <- 1 # Associated between PRO process and survival process
+  alpha <- 0 # Associated between PRO process and survival process
 
   # Create survival time dataset
   dat.surv <- dat.PRO[!duplicated(dat.PRO$USUBJID), ]
@@ -38,8 +38,8 @@ sim_dat_surv <- function(dat.PRO = NULL, reg.formula = NULL){
 
 
 # Probability of event over given time span:
-Time <- seq(min(dat$Time), max(dat$Time), length.out = 100)
-id <- unique(dat$USUBJID)
+Time <- seq(min(dat.PRO$Time), max(dat.PRO$Time), length.out = 100)
+id <- unique(dat.PRO$USUBJID)
 
 
 # Loop over subjects
